@@ -1,8 +1,12 @@
+/**
+ *  Part of Joey DeVries' "hello window" example.
+*/
+
 #include <iostream>
 
 // clang-format off
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 // clang-format on
 
 int main() {

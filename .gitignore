@@ -1,1 +1,4 @@
 build/
+glfw_src/
+glfw_build/
+.vscode
