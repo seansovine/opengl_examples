@@ -4,6 +4,11 @@
 
 set -e # Stop on first failed command.
 
+if ! [ -f "$1.cpp" ]; then
+	echo "Source file '$1.cpp' does not exist. Please provide basename of a source file in the current directory."
+	exit 1
+fi
+
 echo "Building '$1.cpp'..."
 
 # NOTE: This needs to be updated if you clone repo
