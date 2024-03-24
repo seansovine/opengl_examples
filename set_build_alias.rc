@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Creates a temporary alias for the build script,
+#  for convenience.
+# Run from project root directory.
+
+# shellcheck disable=SC2139
+alias example_build="$(realpath .)/examples/example_build.sh"
