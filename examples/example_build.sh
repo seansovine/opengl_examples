@@ -6,6 +6,8 @@ set -e # Stop on first failed command.
 
 echo "Building '$1.cpp'..."
 
+# NOTE: This needs to be updated if you clone repo
+#       to a different location.
 PROJECT_DIR="/home/sean/Code/opengl_examples"
 
 # Link to the glfw installed through apt.
