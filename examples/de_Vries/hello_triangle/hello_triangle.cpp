@@ -80,6 +80,8 @@ int main() {
   if (!success) {
     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    glfwTerminate();
+    return -1;
   }
 
   // fragment shader
@@ -92,6 +94,8 @@ int main() {
   if (!success) {
     glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    glfwTerminate();
+    return -1;
   }
 
   // link shaders
@@ -105,6 +109,8 @@ int main() {
   if (!success) {
     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    glfwTerminate();
+    return -1;
   }
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
