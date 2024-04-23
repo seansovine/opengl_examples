@@ -49,7 +49,7 @@ int main() {
 
   // glfw window creation
   // --------------------
-  GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Learn OpenGL", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -72,6 +72,7 @@ int main() {
   unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShader);
+
   // check for shader compile errors
   int success;
   char infoLog[512];
@@ -85,6 +86,7 @@ int main() {
   unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   glCompileShader(fragmentShader);
+
   // check for shader compile errors
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
@@ -110,24 +112,28 @@ int main() {
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
   float vertices[] = {
-      0.5f,  0.5f,  0.0f, // top right
-      0.5f,  -0.5f, 0.0f, // bottom right
-      -0.5f, -0.5f, 0.0f, // bottom left
-      -0.5f, 0.5f,  0.0f  // top left
+      0.55f,  0.5f,  0.0f, // top right
+      0.55f,  -0.5f, 0.0f, // bottom right
+      -0.45f, -0.5f, 0.0f, // bottom left
+      //
+      -0.55f, 0.5f,  0.0f,  // top left
+      -0.55f, -0.5f,  0.0f,  // bottom left
+      0.45f, 0.5f,  0.0f  // top right
   };
 
   unsigned int indices[] = {
       // note that we start from 0!
-      0, 1, 3, // first Triangle
-      1, 2, 3  // second Triangle
+      0, 1, 2, // first Triangle
+      3, 5, 4  // second Triangle
   };
 
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex
-  // attributes(s).
+
+  // bind the Vertex Array Object first, then bind and set vertex buffer(s),
+  // and then configure vertex attributes(s).
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -139,12 +145,12 @@ int main() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's
-  // bound vertex buffer object so afterwards we can safely unbind
+  // note that this is allowed, the call to glVertexAttribPointer registered VBO as
+  // the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the
-  // VAO; keep the EBO bound.
+  // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object
+  // IS stored in the VAO; keep the EBO bound.
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely

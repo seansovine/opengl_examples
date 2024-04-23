@@ -12,7 +12,7 @@ GLAD header in the root directory is configured appropriately for the system, fo
 De Vries' instructions [here](https://learnopengl.com/Getting-started/Creating-a-window).
 
 The build script is set up to be run from the directory containing the example source file.
-There is a script `set_build_alias.h` in the project root directory that you can
+There is a script `set_build_alias.rc` in the project root directory that you can
 use to create an alias for the build script for the current shell session. To use it run:
 
 ```shell
