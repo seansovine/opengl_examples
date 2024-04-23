@@ -20,7 +20,10 @@ use_system_glfw=1
 
 linked_libs="-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl"
 
-include_paths="-I$PROJECT_DIR/glad/include"
+tools_include="-I$PROJECT_DIR/tools"
+tools_source="$PROJECT_DIR/tools/*.cpp"
+
+include_paths="-I$PROJECT_DIR/glad/include $tools_include"
 local_lib_path=""
 
 glad_source="$PROJECT_DIR/glad/src/glad.c"
@@ -33,6 +36,6 @@ if [ $use_system_glfw -eq 0 ]; then
 	link_info="-L$local_lib_path $link_info -Wl,-rpath=$local_lib_path"
 fi
 
-g++ $glad_source $1.cpp -o build/$1 $include_paths $link_info
+g++ $glad_source $tools_source $1.cpp -o build/$1 $include_paths $link_info
 
 echo "Binary placed at 'build/$1'..."

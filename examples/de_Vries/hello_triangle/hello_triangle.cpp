@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include "helpers.h"
+
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -78,9 +80,7 @@ int main() {
   // ------------------------------------
 
   // vertex shader
-  unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
+  GLint vertexShader = makeShader(vertexShaderSource, GL_VERTEX_SHADER);
 
   // check for shader compile errors
   int success;
@@ -94,9 +94,7 @@ int main() {
   }
 
   // fragment shader one
-  unsigned int fragmentShaderOne = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShaderOne, 1, &fragmentShaderSourceOne, NULL);
-  glCompileShader(fragmentShaderOne);
+  GLint fragmentShaderOne = makeShader(fragmentShaderSourceOne, GL_FRAGMENT_SHADER);
 
   // check for shader compile errors
   glGetShaderiv(fragmentShaderOne, GL_COMPILE_STATUS, &success);
@@ -108,9 +106,7 @@ int main() {
   }
 
   // fragment shader one
-  unsigned int fragmentShaderTwo = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShaderTwo, 1, &fragmentShaderSourceTwo, NULL);
-  glCompileShader(fragmentShaderTwo);
+  GLint fragmentShaderTwo = makeShader(fragmentShaderSourceTwo, GL_FRAGMENT_SHADER);
 
   // check for shader compile errors
   glGetShaderiv(fragmentShaderTwo, GL_COMPILE_STATUS, &success);
