@@ -1,5 +1,6 @@
 /**
- *  Joey De Vries' "hello triangle" example.
+ *  Modified from:
+ *    Joey De Vries' "hello triangle" example.
  *    From learnopengl.com.
  */
 
@@ -9,6 +10,7 @@
 // clang-format on
 
 #include "helpers.h"
+#include "shaders.h"
 
 #include <iostream>
 
@@ -18,33 +20,6 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-const char *vertexShaderSource = R"TST(
-  #version 330 core
-  layout (location = 0) in vec3 aPos;
-  void main()
-  {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-  }
-)TST";
-
-const char *fragmentShaderSourceOne = R"TST(
-  #version 330 core
-  out vec4 FragColor;
-  void main()
-  {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-  }
-)TST";
-
-const char *fragmentShaderSourceTwo = R"TST(
-  #version 330 core
-  out vec4 FragColor;
-  void main()
-  {
-    FragColor = vec4(0.0f, 0.8f, 0.2f, 1.0f);
-  }
-)TST";
 
 int main() {
   // glfw: initialize and configure
@@ -80,69 +55,46 @@ int main() {
   // ------------------------------------
 
   // vertex shader
-  GLint vertexShader = makeShader(vertexShaderSource, GL_VERTEX_SHADER);
+  GLuint vertexShader = makeShader(vertexShaderSource, GL_VERTEX_SHADER);
 
-  // check for shader compile errors
-  int success;
-  char infoLog[512];
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+  if (auto error = checkShaderCompile(vertexShader); error) {
+    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << error.value() << std::endl;
     glfwTerminate();
     return -1;
   }
 
   // fragment shader one
-  GLint fragmentShaderOne = makeShader(fragmentShaderSourceOne, GL_FRAGMENT_SHADER);
+  GLuint fragmentShaderOne = makeShader(fragmentShaderSourceOne, GL_FRAGMENT_SHADER);
 
-  // check for shader compile errors
-  glGetShaderiv(fragmentShaderOne, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(fragmentShaderOne, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+  if (auto error = checkShaderCompile(fragmentShaderOne); error) {
+    std::cout << "ERROR::SHADER::FRAGMENT_ONE::COMPILATION_FAILED\n" << error.value() << std::endl;
     glfwTerminate();
     return -1;
   }
 
   // fragment shader one
-  GLint fragmentShaderTwo = makeShader(fragmentShaderSourceTwo, GL_FRAGMENT_SHADER);
+  GLuint fragmentShaderTwo = makeShader(fragmentShaderSourceTwo, GL_FRAGMENT_SHADER);
 
-  // check for shader compile errors
-  glGetShaderiv(fragmentShaderTwo, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(fragmentShaderTwo, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+  if (auto error = checkShaderCompile(fragmentShaderTwo); error) {
+    std::cout << "ERROR::SHADER::FRAGMENT_TWO::COMPILATION_FAILED\n" << error.value() << std::endl;
     glfwTerminate();
     return -1;
   }
 
   // link shaders
-  unsigned int shaderProgramOne = glCreateProgram();
-  glAttachShader(shaderProgramOne, vertexShader);
-  glAttachShader(shaderProgramOne, fragmentShaderOne);
-  glLinkProgram(shaderProgramOne);
+  GLuint shaderProgramOne = makeProgram({vertexShader, fragmentShaderOne});
 
-  // check for linking errors
-  glGetProgramiv(shaderProgramOne, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgramOne, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+  if (auto error = checkProgramLink(shaderProgramOne); error) {
+    std::cout << "ERROR::SHADER::PROGRAM_TWO::LINKING_FAILED\n" << error.value() << std::endl;
     glfwTerminate();
     return -1;
   }
 
   // link shaders
-  unsigned int shaderProgramTwo = glCreateProgram();
-  glAttachShader(shaderProgramTwo, vertexShader);
-  glAttachShader(shaderProgramTwo, fragmentShaderTwo);
-  glLinkProgram(shaderProgramTwo);
+  GLuint shaderProgramTwo = makeProgram({vertexShader, fragmentShaderTwo});
 
-  // check for linking errors
-  glGetProgramiv(shaderProgramTwo, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgramTwo, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+  if (auto error = checkProgramLink(shaderProgramTwo); error) {
+    std::cout << "ERROR::SHADER::PROGRAM_TWO::LINKING_FAILED\n" << error.value() << std::endl;
     glfwTerminate();
     return -1;
   }
@@ -153,6 +105,7 @@ int main() {
 
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
+
   float vertices[] = {
       0.55f, 0.5f, 0.0f,   // top right
       0.55f, -0.5f, 0.0f,  // bottom right
