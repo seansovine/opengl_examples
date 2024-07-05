@@ -2,7 +2,7 @@
  *  Based on example from glfw homepage.
  *
  *  See: https://shnoh171.github.io/gpu%20and%20gpu%20programming/2019/08/26/installing-glfw-on-ubuntu.html
-*/
+ */
 
 // clang-format off
 #include "glad/glad.h"
@@ -11,44 +11,41 @@
 
 #include <iostream>
 
-int main(void)
-{
-    GLFWwindow* window;
+int main(void) {
+  GLFWwindow *window;
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+  /* Initialize the library */
+  if (!glfwInit())
+    return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    // Use glad to load all OpenGL function pointers
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-      std::cout << "Failed to initialize GLAD" << std::endl;
-      return -1;
-    }
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
+  /* Create a windowed mode window and its OpenGL context */
+  window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  if (!window) {
     glfwTerminate();
-    return 0;
+    return -1;
+  }
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(window);
+
+  // Use glad to load all OpenGL function pointers
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return -1;
+  }
+
+  /* Loop until the user closes the window */
+  while (!glfwWindowShouldClose(window)) {
+    /* Render here */
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    /* Swap front and back buffers */
+    glfwSwapBuffers(window);
+
+    /* Poll for and process events */
+    glfwPollEvents();
+  }
+
+  glfwTerminate();
+  return 0;
 }
