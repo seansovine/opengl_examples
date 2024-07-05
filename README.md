@@ -23,6 +23,15 @@ We'll want to think about whether shaders should be in a folder for each example
 Probably so. Images are probably fine in their own folder, which could have
 subfolders within it.
 
-> We will want to remove the globbing for more fine grained dependency specification.
+Priority:
 
-Also, figure out why the glfw window example is seg faulting.
+> We will want to remove the globbing for more fine-grained dependency specification.
+
+Figure out why the glfw window example is seg faulting.
+
+Fix file path issue for shaders in `coordinate_systems_multiple_devries.cpp`, and
+also get texture file(s) for that example. Will need to figure out a good place
+to put texture resources for De Vries' (and our) examples. Maybe in 
+`resources/learnopengl` and just `resources`. We'll need to sort out the file path
+handling for those as well. Probably a good way to handle the paths is to add
+or update code in De Vries' `Filesystem` utility class.
