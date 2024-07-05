@@ -4,7 +4,10 @@
  *  See: https://shnoh171.github.io/gpu%20and%20gpu%20programming/2019/08/26/installing-glfw-on-ubuntu.html
 */
 
+// clang-format off
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
+// clang-format on
 
 int main(void)
 {
