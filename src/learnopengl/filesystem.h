@@ -33,6 +33,7 @@ private:
   }
 
   static std::string getPathRelativeRoot(const std::string &path) {
+    // Note: path should be relative to the project root.
     return getRoot() + std::string("/") + path;
   }
 
