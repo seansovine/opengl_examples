@@ -26,3 +26,11 @@ example_build <SOURCE_BASENAME>
 ```
 
 from the directory where the source file you're building is located.
+
+## CMake build system
+
+We've now added a CMake build system based on [gloom](https://github.com/aleksaro/gloom).
+
+We will want to modify it more for our purposes, especially
+as we add more examples and build out existing code. But this
+is a big improvement on what we had before.
