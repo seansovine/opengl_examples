@@ -19,14 +19,10 @@ nice, professional setup.
 
 ## To Do Next
 
-Next we want to add De Vries' final example for his Coordinate Systems section.
-This uses the Textures section material, so we may as well add that section's
-example too. We will need to update the build system, and some small changes to
-the project structure may be needed, like adding a new dependency or two and
-maybe create one or more folders for images and similar assets.
-
 We'll want to think about whether shaders should be in a folder for each example.
 Probably so. Images are probably fine in their own folder, which could have
 subfolders within it.
+
+> We will want to remove the globbing for more fine grained dependency specification.
 
 Also, figure out why the glfw window example is seg faulting.
