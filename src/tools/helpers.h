@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <optional>
-#include <utility>
 #include <vector>
 
 GLuint makeShader(const std::string &source, GLenum type);
