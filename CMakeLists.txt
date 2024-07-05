@@ -77,10 +77,10 @@ add_definitions (-DGLFW_INCLUDE_NONE
 
 # Add first example -- our version of DeVries' "hello triangle".
 
-add_executable (hello_triangle src/examples/de_Vries/hello_triangle/hello_triangle.cpp # src/examples/de_Vries/hello_triangle/shaders.h
-                                src/tools/helpers.cpp
-                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
-                                ${VENDORS_SOURCES})
+add_executable (hello_triangle src/examples/de_Vries/hello_triangle/hello_triangle.cpp src/examples/de_Vries/hello_triangle/shaders.h
+                               src/tools/helpers.cpp src/tools/helpers.h
+                               ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
+                               ${VENDORS_SOURCES})
 
 target_link_libraries (hello_triangle
                        glfw
