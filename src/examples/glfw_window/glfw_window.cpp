@@ -1,5 +1,5 @@
 /**
- *  Example from glfw homepage.
+ *  Based on example from glfw homepage.
  *
  *  See: https://shnoh171.github.io/gpu%20and%20gpu%20programming/2019/08/26/installing-glfw-on-ubuntu.html
 */
@@ -8,6 +8,8 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 // clang-format on
+
+#include <iostream>
 
 int main(void)
 {
@@ -27,6 +29,12 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+
+    // Use glad to load all OpenGL function pointers
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+      std::cout << "Failed to initialize GLAD" << std::endl;
+      return -1;
+    }
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
