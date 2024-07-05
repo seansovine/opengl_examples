@@ -88,8 +88,8 @@ set(hello_window_sources src/examples/glfw_window/hello_window.cpp)
 glex_add_executable(hello_window "${hello_window_sources}")
 
 # Our version of DeVries' "hello triangle".
-set(hello_triangle_sources src/examples/de_Vries/hello_triangle/hello_triangle.cpp
-                 src/examples/de_Vries/hello_triangle/shaders.h
+set(hello_triangle_sources src/examples/hello_triangle/hello_triangle.cpp
+        src/examples/hello_triangle/shaders.h
                  src/tools/helpers.cpp
                  src/tools/helpers.h)
 glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed to pass whole list.

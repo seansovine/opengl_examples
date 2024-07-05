@@ -28,3 +28,5 @@ maybe create one or more folders for images and similar assets.
 We'll want to think about whether shaders should be in a folder for each example.
 Probably so. Images are probably fine in their own folder, which could have
 subfolders within it.
+
+Also, figure out why the glfw window example is seg faulting.
