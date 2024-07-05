@@ -75,21 +75,21 @@ add_definitions (-DGLFW_INCLUDE_NONE
                  -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 
 
-# Add first example -- our version of DeVries' "hello triangle".
+## Add executable and library targets. ##
 
-add_executable (hello_triangle src/examples/de_Vries/hello_triangle/hello_triangle.cpp src/examples/de_Vries/hello_triangle/shaders.h
-                               src/tools/helpers.cpp src/tools/helpers.h
-                               ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
-                               ${VENDORS_SOURCES})
+# Provides glex_add_executable macro.
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utilities.cmake)
 
-target_link_libraries (hello_triangle
-                       glfw
-                       ${GLFW_LIBRARIES}
-                       ${GLAD_LIBRARIES})
+# Basic glfw window examples.
+set(glfw_window_sources src/examples/glfw_window/glfw_window.cpp)
+glex_add_executable(glfw_window "${glfw_window_sources}")
 
-set_target_properties (hello_triangle PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+set(hello_window_sources src/examples/glfw_window/hello_window.cpp)
+glex_add_executable(hello_window "${hello_window_sources}")
 
-# Note: We'll want to generalize this process for
-#       adding new executables, somehow.
-#       We could make a function or macro, perhaps.
+# Our version of DeVries' "hello triangle".
+set(hello_triangle_sources src/examples/de_Vries/hello_triangle/hello_triangle.cpp
+                 src/examples/de_Vries/hello_triangle/shaders.h
+                 src/tools/helpers.cpp
+                 src/tools/helpers.h)
+glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed to pass whole list.
