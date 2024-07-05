@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-#include "helpers.h"
+#include "tools/helpers.h"
 #include "shaders.h"
 
 #include <iostream>
