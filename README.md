@@ -16,3 +16,15 @@ We will want to modify the CMake setup more for our purposes, especially
 as we add more examples and build out the existing code. But this
 is a big improvement on what we had before and is heading towards a
 nice, professional setup.
+
+## To Do Next
+
+Next we want to add De Vries' final example for his Coordinate Systems section.
+This uses the Textures section material, so we may as well add that section's
+example too. We will need to update the build system, and some small changes to
+the project structure may be needed, like adding a new dependency or two and
+maybe create one or more folders for images and similar assets.
+
+We'll want to think about whether shaders should be in a folder for each example.
+Probably so. Images are probably fine in their own folder, which could have
+subfolders within it.
