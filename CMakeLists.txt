@@ -41,6 +41,13 @@ include_directories (src/
                      thirdparty/stb/)
 
 
+# Provide C-string var for repo root.
+#  - Borrowed from De Vries' LearnOpenGL repo.
+
+configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+include_directories(${CMAKE_BINARY_DIR}/configuration)
+
+
 # Add files as done in gloom -- maybe change later
 
 file (GLOB         VENDORS_SOURCES thirdparty/glad/src/glad.c)
@@ -88,8 +95,15 @@ set(hello_window_sources src/examples/glfw_window/hello_window.cpp)
 glex_add_executable(hello_window "${hello_window_sources}")
 
 # Our version of DeVries' "hello triangle".
-set(hello_triangle_sources src/examples/hello_triangle/hello_triangle.cpp
+set(hello_triangle_sources
+        src/examples/hello_triangle/hello_triangle.cpp
         src/examples/hello_triangle/shaders.h
-                 src/tools/helpers.cpp
-                 src/tools/helpers.h)
+        src/tools/helpers.cpp
+        src/tools/helpers.h)
 glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed to pass whole list.
+
+# De Vries' coordinate systems example.
+set(coordinate_systems_sources
+        src/examples/coordinate_systems/coordinate_systems_multiple_de_vries.cpp
+        thirdparty/stb/stb_image.h)
+glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.
