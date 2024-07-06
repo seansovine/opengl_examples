@@ -5,9 +5,7 @@ macro(glex_add_executable name sources)
     add_executable (
         ${name}
         ${sources}
-        ${PROJECT_SHADERS}
-        ${PROJECT_CONFIGS}
-        ${VENDORS_SOURCES}
+        ${VENDORS_SOURCES} # Contains glad.c
     )
 
     target_link_libraries (
