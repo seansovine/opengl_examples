@@ -17,21 +17,45 @@ as we add more examples and build out the existing code. But this
 is a big improvement on what we had before and is heading towards a
 nice, professional setup.
 
+## Project Structure
+
+We're currently putting images, textures, maybe model files under the `resources`
+subdirectory of project root.
+
+We're grouping shaders in a `shaders` subfolder of each example, but keeping
+a `src/shaders` folder in case there are shaders that can be shared across
+example programs.
+
+The `src/learnopengl` folder contains De Vries' utility programs from his tutorial,
+with some of our modifications.
+
 ## To Do Next
 
-We'll want to think about whether shaders should be in a folder for each example.
-Probably so. Images are probably fine in their own folder, which could have
-subfolders within it.
+Look into the libraries we use (mostly the ones from De Vries code). E.g., `stb_image`.
+See what we can learn about how they're working and so on.
 
-Priority:
+Keep studying De Vries' code and reading his tutorial, and start writing some
+of our own code based on what we learn and ideas we get from other places
+(like [Physically Based Rendering](https://www.pbr-book.org/4ed/contents)).
 
-> We will want to remove the globbing for more fine-grained dependency specification.
+Maybe create a similar project to this for WebGL. It seems to use a version of
+GLSL, so there should be overlap with regular OpenGL programming.
 
-Figure out why the glfw window example is seg faulting.
+## Question
 
-Fix file path issue for shaders in `coordinate_systems_multiple_devries.cpp`, and
-also get texture file(s) for that example. Will need to figure out a good place
-to put texture resources for De Vries' (and our) examples. Maybe in 
-`resources/learnopengl` and just `resources`. We'll need to sort out the file path
-handling for those as well. Probably a good way to handle the paths is to add
-or update code in De Vries' `Filesystem` utility class.
+Understand the `dl` library here:
+
+```cmake
+  if(NOT WIN32)
+    set(GLAD_LIBRARIES dl)
+  endif()
+```
+
+This bit was added by gloom, and I don't see that we're building a `dl` target.
+So I'm guessing this is a library provided by the Linux environment.
+
+[This](https://stackoverflow.com/questions/33678965/need-to-link-cmake-project-to-dl-library)
+Stack Overflow post suggests that it might be "dlopen". And 
+[this](https://stackoverflow.com/questions/63306734/when-to-actually-use-dlopen-does-dlopen-means-dynamic-loading)
+post suggests it might be used when you want to dynamically load a library,
+as in a plugin architecture.
