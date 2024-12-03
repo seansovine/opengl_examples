@@ -78,6 +78,10 @@ public:
     return mDimensions;
   }
 
+  float aspectRatio() const {
+    return mDimensions.first / mDimensions.second;
+  }
+
 private:
   GLFWwindow *mWindow = nullptr;
 

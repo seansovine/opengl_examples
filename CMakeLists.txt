@@ -3,7 +3,7 @@
 #
 # Based on gloom: https://github.com/aleksaro/gloom
 
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.28)
 project (opengl_examples)
 
 
@@ -107,3 +107,9 @@ set(coordinate_systems_sources
         src/examples/coordinate_systems/coordinate_systems_multiple_de_vries.cpp
         thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.
+
+set(model_viewer_sources
+        src/model_viewer/model_viewer.cpp
+        src/model_viewer/lib/textured_model.h
+        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
+glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.

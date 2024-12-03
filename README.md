@@ -1,8 +1,16 @@
-# OpenGL Examples
+# OpenGL Examples Project
 
-Currently these examples are mostly slight modifications of examples from
-Joey De Vries' excellent [learnopengl.com](https://learnopengl.com/) tutorial,
-with a CMake build system and dependency management mostly adapted from
-[gloom](https://github.com/aleksaro/gloom). However we plan to keep
-expanding both the examples and the common infrastructure as we keep
-learning more OpenGL programming. (By "we" here I mean "me" :)
+This project will contain code I've written as I learn more
+OpenGL by following the excellent [learnopengl.com](https://learnopengl.com/) tutorial. It has a convenient CMake build system adapted from
+[gloom](https://github.com/aleksaro/gloom). The programs in `src/examples` are small adaptations of the _learnopengl.com_ examples.
+
+The main project is in `src/model_viewer`.
+So far it shows a textured cube in the center of the window, that rotates at a constant rate.
+I plan to add the ability to load arbitrary textured models
+and use keyboard input to move and rotate the displayed model.
+And later I'll experiment with other effects, like lighting and shadow.
+It uses an example model and texture and some utility code from
+_learnopengl.com_, along with some of our own utility code.
+
+We'll continue to follow the _learnopengl.com_ tutorial, which I
+can't recommend enough.
