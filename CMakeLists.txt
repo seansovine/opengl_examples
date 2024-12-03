@@ -105,5 +105,5 @@ glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed 
 # De Vries' coordinate systems example.
 set(coordinate_systems_sources
         src/examples/coordinate_systems/coordinate_systems_multiple_de_vries.cpp
-        thirdparty/stb/stb_image.h)
+        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.

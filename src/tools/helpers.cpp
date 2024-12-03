@@ -25,7 +25,7 @@ std::optional<std::string> checkShaderCompile(GLuint shader) {
 
 GLuint makeProgram(std::vector<GLuint> shaders) {
   if (size(shaders) == 0) {
-    throw new std::invalid_argument("Must provide at least one shader to makeProgram. None provided.");
+    throw std::invalid_argument("Must provide at least one shader to makeProgram. None provided.");
   }
   GLuint shaderProgram = glCreateProgram();
   for (GLuint shader : shaders) {
