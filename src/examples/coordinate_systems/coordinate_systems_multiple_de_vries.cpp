@@ -1,9 +1,7 @@
 // coordinate_systems_multiple example from Joey De Vries' learnopengl.com.
 
 // clang-format off
-// The first two needed to be included in this order, but
-// we're manually formatting this whole section for now.
-
+// NOTE: These must be included in this order.
 #include "glad/glad.h"
 #include <tools/glfw_wrapper.h>
 // clang-format on
@@ -18,7 +16,6 @@
 
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
-// clang-format on
 
 #include <iostream>
 
