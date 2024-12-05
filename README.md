@@ -2,7 +2,7 @@
 
 This project will contain code I've written as I learn more
 OpenGL by following the excellent [learnopengl.com](https://learnopengl.com/)
-tutorial, which I can't recommend enough
+tutorial, which I can't recommend enough.
 It has a convenient CMake build system adapted from
 [gloom](https://github.com/aleksaro/gloom). The programs in `src/examples`
 are small adaptations of the _learnopengl.com_ examples.
