@@ -2,8 +2,8 @@
 // Adapted from code in De Vries' coordinate systems
 // example from www.learnopengl.com.
 //
-// NOTE TO USER: #include "glad/glad.h must come before this.
-//
+// NOTE TO USER: `#include "glad/glad.h"` must come before this
+// header in programs that use this utility.
 
 #ifndef GLFW_WRAPPER_H
 #define GLFW_WRAPPER_H
@@ -19,14 +19,12 @@ public:
   GLFWWrapper() = default;
 
   ~GLFWWrapper() {
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
+    // Terminate GLFW and release its resources
     glfwTerminate();
   }
 
   bool init() {
-    // glfw: initialize and configure
-    // ------------------------------
+    // Initialize and configure glfw
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -36,8 +34,7 @@ public:
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
 
-    // glfw window creation
-    // --------------------
+    // Create window.
     mWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
     if (mWindow == nullptr) {
       std::cout << "Failed to create GLFW window" << std::endl;
@@ -53,20 +50,17 @@ public:
     return true;
   }
 
-  bool shouldClose() {
+  [[nodiscard]] bool shouldClose() const {
     return glfwWindowShouldClose(mWindow);
   }
 
-  void processInput() {
-    // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-    // ---------------------------------------------------------------------------------------------------------
+  void processInput() const {
+    // Handle key presses, currently just escape.
     if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
       glfwSetWindowShouldClose(mWindow, true);
   }
 
-  void swapBuffers() {
-    // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-    // -------------------------------------------------------------------------------
+  void swapBuffers() const {
     glfwSwapBuffers(mWindow);
   }
 
@@ -78,7 +72,7 @@ public:
     return mDimensions;
   }
 
-  float aspectRatio() const {
+  [[nodiscard]] float aspectRatio() const {
     return mDimensions.first / mDimensions.second;
   }
 
@@ -92,11 +86,9 @@ private:
   static constexpr unsigned int SCR_WIDTH = 800;
   static constexpr unsigned int SCR_HEIGHT = 600;
 
-  // glfw: whenever the window size changed (by OS or user resize) this callback function executes
-  // ---------------------------------------------------------------------------------------------
+  // Callback that GLFW calls after window is resized.
   static void framebuffer_size_callback(GLFWwindow * /*window*/, int width, int height) {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
+    // make sure the viewport matches the new window dimensions
     glViewport(0, 0, width, height);
   }
 };

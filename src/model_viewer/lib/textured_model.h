@@ -14,10 +14,10 @@
 #include <memory>
 
 // For now, we'll hardcode De Vries' box model, but later
-// we'll add ability to load other models.
+// we'll add ability to load other models, maybe with Assimp.
 
 // clang-format off
-static const float sModelXYZUVVertices[] = {
+static constexpr float sModelXYZUVVertices[] = {
   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,   0.5f,  -0.5f, -0.5f, 1.0f, 0.0f,   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
@@ -38,17 +38,20 @@ static const float sModelXYZUVVertices[] = {
 };
 // clang-format on
 
+// -------------
+// TexturedModel
+
 // Represents a model with x, y, z coords followed by u, v texture coords.
 
 class TexturedModel {
 public:
-  // Takes ownership of texture.
+  /// Takes ownership of texture.
   explicit TexturedModel(std::shared_ptr<GLTexture>&& texture) {
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
-
     glBindVertexArray(mVAO);
 
+    // Put vertex data in buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(sModelXYZUVVertices), sModelXYZUVVertices, GL_STATIC_DRAW);
 
@@ -60,7 +63,6 @@ public:
     glEnableVertexAttribArray(1);
 
     mCount = sizeof(sModelXYZUVVertices) / (5 * sizeof(float));
-
     mTexture = texture;
   }
 
@@ -72,11 +74,11 @@ public:
     glDeleteBuffers(1, &mVBO);
   }
 
-  unsigned int VAO() const {
+  [[nodiscard]] unsigned int VAO() const {
     return mVAO;
   }
 
-  int vertexCount() const {
+  [[nosdiscard]] int vertexCount() const {
     return mCount;
   }
 
@@ -87,7 +89,6 @@ public:
 private:
   unsigned int mVAO = 0;
   unsigned int mVBO = 0;
-
   int mCount = 0;
 
   std::shared_ptr<GLTexture> mTexture;

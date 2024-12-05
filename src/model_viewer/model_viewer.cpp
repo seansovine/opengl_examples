@@ -29,9 +29,10 @@
 bool gl_configure();
 
 using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedModel>>;
+
 ShaderAndModel loadShaderAndModel();
 
-void setupMatrices(const Shader* shader, const float aspectRatio);
+void setupMatrices(const Shader* shader, float aspectRatio);
 
 void updateModelTransformation(const Shader* shader);
 
@@ -97,16 +98,17 @@ bool gl_configure() {
 
     return false; // Early return.
   }
+
   glEnable(GL_DEPTH_TEST);
 
   return true;
 }
 
 ShaderAndModel loadShaderAndModel() {
-  // Load shaders.
   std::string vertexShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer.vs");
   std::string fragmentShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer.fs");
 
+  // Load shaders.
   auto ourShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
   // Load texture.
@@ -114,6 +116,7 @@ ShaderAndModel loadShaderAndModel() {
 
   if (!texture1->isLoaded()) {
     std::cout << "Failed to load texture" << std::endl;
+
     return { nullptr, nullptr }; // Early return.
   }
 
