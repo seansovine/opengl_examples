@@ -110,9 +110,9 @@ ShaderAndModel loadShaderAndModel() {
   auto ourShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
   // Load texture.
-  GLTexture texture1("resources/learnopengl/textures/container.jpg", GL_RGB);
+  auto texture1 = std::make_shared<GLTexture>("resources/learnopengl/textures/container.jpg", GL_RGB);
 
-  if (!texture1.isLoaded()) {
+  if (!texture1->isLoaded()) {
     std::cout << "Failed to load texture" << std::endl;
     return { nullptr, nullptr }; // Early return.
   }
@@ -122,7 +122,7 @@ ShaderAndModel loadShaderAndModel() {
   ourShader->setInt("texture1", 0);
 
   // Load model
-  auto model = std::make_shared<TexturedModel>( texture1 );
+  auto model = std::make_shared<TexturedModel>( std::move(texture1) );
 
   return { ourShader, model };
 }

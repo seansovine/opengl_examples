@@ -11,6 +11,8 @@
 
 #include <tools/gl_texture.h>
 
+#include <memory>
+
 // For now, we'll hardcode De Vries' box model, but later
 // we'll add ability to load other models.
 
@@ -40,7 +42,8 @@ static const float sModelXYZUVVertices[] = {
 
 class TexturedModel {
 public:
-  TexturedModel(const GLTexture& texture) {
+  // Takes ownership of texture.
+  explicit TexturedModel(std::shared_ptr<GLTexture>&& texture) {
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
 
@@ -58,8 +61,10 @@ public:
 
     mCount = sizeof(sModelXYZUVVertices) / (5 * sizeof(float));
 
-    mTexture = &texture;
+    mTexture = texture;
   }
+
+  TexturedModel(const TexturedModel&) = delete;
 
   ~TexturedModel() {
     // de-allocate now
@@ -85,7 +90,7 @@ private:
 
   int mCount = 0;
 
-  const GLTexture* mTexture;
+  std::shared_ptr<GLTexture> mTexture;
 };
 
 #endif //TEXTURED_MODEL_H
