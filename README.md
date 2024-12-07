@@ -7,7 +7,7 @@ It has a convenient CMake build system adapted from
 [gloom](https://github.com/aleksaro/gloom). The programs in `src/examples`
 are small adaptations of the _learnopengl.com_ examples.
 
-The main project is in `src/model_viewer`.
+The main project is in [src/model_viewer](src/model_viewer).
 So far it shows a textured cube in the center of the window, that rotates at a constant rate.
 I plan to add the ability to load arbitrary textured models
 and use keyboard input to move and rotate the displayed model.
