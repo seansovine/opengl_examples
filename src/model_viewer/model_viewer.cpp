@@ -36,6 +36,8 @@ void setupMatrices(const Shader* shader, float aspectRatio);
 
 void updateModelTransformation(const Shader* shader);
 
+void updateViewTransformation(const Shader* shader);
+
 void render(const TexturedModel* model);
 
 // -------------
@@ -84,6 +86,8 @@ int main() {
     // Right now this is not tied to a clock, so the rotation
     // speed will be different on each system. (We'll fix that.)
     updateModelTransformation(ourShader.get());
+    // Camera is steadily moving away from object.
+    updateViewTransformation(ourShader.get());
   }
 
   return 0;
@@ -167,19 +171,37 @@ void setupMatrices(const Shader* shader, const float aspectRatio) {
 }
 
 void updateModelTransformation(const Shader* shader) {
-  constexpr float increment = 0.1f;
+  constexpr float increment = 0.4f;
   constexpr unsigned int mod = 360 / increment;
   static unsigned int step = 0;
+
+  // Update model matrix.
 
   float angle = 20.0f + increment * step;
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
   auto model = glm::mat4(1.0f);
   makeModelMatrix(model, position, angle);
-
   shader->setMat4("model", model);
 
+  // Update "time" step.
   step = (step + 1) % mod;
+}
+
+void updateViewTransformation(const Shader* shader) {
+  constexpr float increment = -0.01f;
+  static unsigned long step = 0;
+
+  // Update view matrix.
+
+  float distance = -3.0f + increment * step;
+
+  auto view = glm::mat4(1.0f);
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, distance));
+  shader->setMat4("view", view);
+
+  // Update "time" step.
+  step++;
 }
 
 // ----------------------------
