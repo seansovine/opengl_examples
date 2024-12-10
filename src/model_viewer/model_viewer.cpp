@@ -130,25 +130,35 @@ ShaderAndModel loadShaderAndModel() {
   return { ourShader, model };
 }
 
+// Helper for constructing the model matrix.
+void makeModelMatrix(glm::mat4& model,const glm::vec3& position, float angle) {
+  model = glm::translate(model, position);
+  model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+  float scale_factor = 0.7f;
+  model = glm::scale(model, glm::vec3(scale_factor, scale_factor, scale_factor));
+}
+
 // NOTE: Assumes we don't resize the window.
 // We could have the window resize callback call this to
 // update the aspect ratio in the perspective transformation.
 void setupMatrices(const Shader* shader, const float aspectRatio) {
-  // Matrices are from www.learnopengl.com coordinate systems example.
+  // Matrices are based on www.learnopengl.com coordinate systems example.
 
+  // Performs perspective projection.
   auto projection = glm::mat4(1.0f);
   projection = glm::perspective(glm::radians(45.0f), aspectRatio,
                                 0.1f, 100.0f);
 
+  // Converts world coordinates to camera viewpoint coordinates.
   auto view = glm::mat4(1.0f);
   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
   float angle = 20.0f;
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
+  // Converts model local coordinates to world coordinates.
   auto model = glm::mat4(1.0f);
-  model = glm::translate(model, position);
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+  makeModelMatrix(model, position, angle);
 
   // Pass matrices to shader as uniforms.
   shader->setMat4("projection", projection);
@@ -165,8 +175,7 @@ void updateModelTransformation(const Shader* shader) {
   glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
   auto model = glm::mat4(1.0f);
-  model = glm::translate(model, position);
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+  makeModelMatrix(model, position, angle);
 
   shader->setMat4("model", model);
 
