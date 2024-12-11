@@ -12,9 +12,8 @@
 #include "glad/glad.h"
 
 #include "lib/textured_model.h"
+#include "lib/transformations.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
@@ -31,12 +30,6 @@ bool gl_configure();
 using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedModel>>;
 
 ShaderAndModel loadShaderAndModel();
-
-void setupMatrices(const Shader* shader, float aspectRatio);
-
-void updateModelTransformation(const Shader* shader);
-
-void updateViewTransformation(const Shader* shader);
 
 void render(const TexturedModel* model);
 
@@ -68,8 +61,8 @@ int main() {
     return -1;
   }
 
-  // Set view transformations.
-  setupMatrices(ourShader.get(), window.aspectRatio());
+  // Set uo transformations.
+  Transformations transformations{ ourShader, window.aspectRatio() };
 
   // -----------------
   // Main render loop.
@@ -85,9 +78,9 @@ int main() {
     // Rotates the model by a fixed amount on each call.
     // Right now this is not tied to a clock, so the rotation
     // speed will be different on each system. (We'll fix that.)
-    updateModelTransformation(ourShader.get());
-    // Camera is steadily moving away from object.
-    updateViewTransformation(ourShader.get());
+    transformations.updateModelTransformation();
+    // Camera is also rotating, on a different axis from the model.
+    transformations.updateViewTransformation();
   }
 
   return 0;
@@ -132,76 +125,6 @@ ShaderAndModel loadShaderAndModel() {
   auto model = std::make_shared<TexturedModel>( std::move(texture1) );
 
   return { ourShader, model };
-}
-
-// Helper for constructing the model matrix.
-void makeModelMatrix(glm::mat4& model,const glm::vec3& position, float angle) {
-  model = glm::translate(model, position);
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f));
-  float scale_factor = 0.7f;
-  model = glm::scale(model, glm::vec3(scale_factor, scale_factor, scale_factor));
-}
-
-// NOTE: Assumes we don't resize the window.
-// We could have the window resize callback call this to
-// update the aspect ratio in the perspective transformation.
-void setupMatrices(const Shader* shader, const float aspectRatio) {
-  // Matrices are based on www.learnopengl.com coordinate systems example.
-
-  // Performs perspective projection.
-  auto projection = glm::mat4(1.0f);
-  projection = glm::perspective(glm::radians(45.0f), aspectRatio,
-                                0.1f, 100.0f);
-
-  // Converts world coordinates to camera viewpoint coordinates.
-  auto view = glm::mat4(1.0f);
-  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-  float angle = 20.0f;
-  glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-
-  // Converts model local coordinates to world coordinates.
-  auto model = glm::mat4(1.0f);
-  makeModelMatrix(model, position, angle);
-
-  // Pass matrices to shader as uniforms.
-  shader->setMat4("projection", projection);
-  shader->setMat4("view", view);
-  shader->setMat4("model", model);
-}
-
-void updateModelTransformation(const Shader* shader) {
-  constexpr float increment = 0.4f;
-  constexpr unsigned int mod = 360 / increment;
-  static unsigned int step = 0;
-
-  // Update model matrix.
-
-  float angle = 20.0f + increment * step;
-  glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-
-  auto model = glm::mat4(1.0f);
-  makeModelMatrix(model, position, angle);
-  shader->setMat4("model", model);
-
-  // Update "time" step.
-  step = (step + 1) % mod;
-}
-
-void updateViewTransformation(const Shader* shader) {
-  constexpr float increment = 0.4f;
-  static auto rotation = glm::mat4(1.0f);
-
-  // Update view matrix.
-
-  glm::vec3 position = glm::vec3(0.0f, 0.0f, -3.0f);
-
-  auto view = glm::mat4(1.0f);
-  view = glm::translate(view, position) * glm::inverse(rotation);
-  shader->setMat4("view", view);
-
-  // Rotation camera position vector around y-axis.
-  rotation = glm::rotate(rotation, glm::radians(increment), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 // ----------------------------
