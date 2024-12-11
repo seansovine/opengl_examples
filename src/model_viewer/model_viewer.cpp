@@ -116,7 +116,7 @@ ShaderAndModel loadShaderAndModel() {
   auto ourShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
   // Load texture.
-  auto texture1 = std::make_shared<GLTexture>("resources/learnopengl/textures/container.jpg", GL_RGB);
+  auto texture1 = std::make_shared<GLTexture>("resources/textures/Bricks098_2K-JPG_Color.jpg", GL_RGB);
 
   if (!texture1->isLoaded()) {
     std::cout << "Failed to load texture" << std::endl;
@@ -137,7 +137,7 @@ ShaderAndModel loadShaderAndModel() {
 // Helper for constructing the model matrix.
 void makeModelMatrix(glm::mat4& model,const glm::vec3& position, float angle) {
   model = glm::translate(model, position);
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+  model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f));
   float scale_factor = 0.7f;
   model = glm::scale(model, glm::vec3(scale_factor, scale_factor, scale_factor));
 }
@@ -189,19 +189,19 @@ void updateModelTransformation(const Shader* shader) {
 }
 
 void updateViewTransformation(const Shader* shader) {
-  constexpr float increment = -0.01f;
-  static unsigned long step = 0;
+  constexpr float increment = 0.4f;
+  static auto rotation = glm::mat4(1.0f);
 
   // Update view matrix.
 
-  float distance = -3.0f + increment * step;
+  glm::vec3 position = glm::vec3(0.0f, 0.0f, -3.0f);
 
   auto view = glm::mat4(1.0f);
-  view = glm::translate(view, glm::vec3(0.0f, 0.0f, distance));
+  view = glm::translate(view, position) * glm::inverse(rotation);
   shader->setMat4("view", view);
 
-  // Update "time" step.
-  step++;
+  // Rotation camera position vector around y-axis.
+  rotation = glm::rotate(rotation, glm::radians(increment), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 // ----------------------------
