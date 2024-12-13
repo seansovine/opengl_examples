@@ -8,20 +8,27 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <learnopengl/shader_m.h>
 
 #include <memory>
 
-void makeModelMatrix(glm::mat4& model,const glm::vec3& position, float angle);
+void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle);
+
+// ----------------
+// Transformations.
 
 // Class representing coordinate transformations that
 // are passed to a shader via uniform variables.
 
 class Transformations {
 public:
-  Transformations(const std::shared_ptr<Shader>& shader, float aspectRatio) : mShader(shader) {
+  Transformations(const std::shared_ptr<Shader> &shader, float aspectRatio) : mShader(shader) {
     setupMatrices(aspectRatio);
+  }
+
+  void updateProjectionTransformation(float aspectRatio) {
+    mProjectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+    mShader->setMat4("projection", mProjectionMatrix);
   }
 
   void updateModelTransformation() {
@@ -66,8 +73,7 @@ private:
     // Matrices are based on www.learnopengl.com coordinate systems example.
 
     // Performs perspective projection.
-    mProjectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio,
-                                  0.1f, 100.0f);
+    mProjectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
     // Converts world coordinates to camera viewpoint coordinates.
     mViewMatrix = glm::translate(mViewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -98,11 +104,11 @@ private:
 // Helper for constructing the model matrix.
 // NOTE: We define this in the header for now; if
 // the program grows we'll move things to a .cpp.
-inline void makeModelMatrix(glm::mat4& model,const glm::vec3& position, float angle) {
+inline void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle) {
   model = glm::translate(model, position);
   model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f));
   float scale_factor = 0.7f;
   model = glm::scale(model, glm::vec3(scale_factor, scale_factor, scale_factor));
 }
 
-#endif //TRANSFORMATIONS_H
+#endif // TRANSFORMATIONS_H

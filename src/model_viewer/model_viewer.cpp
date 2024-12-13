@@ -10,11 +10,9 @@
 
 // Note, this must be included first.
 #include "glad/glad.h"
-
 #include "lib/textured_model.h"
 #include "lib/transformations.h"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <tools/gl_texture.h>
@@ -31,7 +29,7 @@ using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<Textur
 
 ShaderAndModel loadShaderAndModel();
 
-void render(const TexturedModel* model);
+void render(const TexturedModel *model);
 
 // -------------
 // Program main.
@@ -62,7 +60,12 @@ int main() {
   }
 
   // Set uo transformations.
-  Transformations transformations{ ourShader, window.aspectRatio() };
+  Transformations transformations{ourShader, window.aspectRatio()};
+
+  // Set our resize callback that updates the projection.
+  window.callbackInterface().mUserResizeCallback = [&window, &transformations](float, float) {
+    transformations.updateProjectionTransformation(window.aspectRatio());
+  };
 
   // -----------------
   // Main render loop.
@@ -114,7 +117,7 @@ ShaderAndModel loadShaderAndModel() {
   if (!texture1->isLoaded()) {
     std::cout << "Failed to load texture" << std::endl;
 
-    return { nullptr, nullptr }; // Early return.
+    return {nullptr, nullptr}; // Early return.
   }
 
   // Set texture as a uniform for shader.
@@ -122,15 +125,15 @@ ShaderAndModel loadShaderAndModel() {
   ourShader->setInt("texture1", 0);
 
   // Load model
-  auto model = std::make_shared<TexturedModel>( std::move(texture1) );
+  auto model = std::make_shared<TexturedModel>(std::move(texture1));
 
-  return { ourShader, model };
+  return {ourShader, model};
 }
 
 // ----------------------------
 // Call OpenGL rendering funcs.
 
-void render(const TexturedModel* model) {
+void render(const TexturedModel *model) {
   // Clear buffers. Use black background.
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

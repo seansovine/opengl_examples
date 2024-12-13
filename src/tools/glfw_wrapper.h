@@ -10,9 +10,34 @@
 
 #include <GLFW/glfw3.h>
 
+#include <functional>
 #include <iostream>
 
-// GLFW Wrapper
+// -----------------------------------
+// Interface for passing callbacks in.
+
+class CallbackInterface {
+  using ResizeCallback = std::function<void(int width, int height)>;
+
+public:
+  CallbackInterface() = default;
+
+  void resizeCallback(int width, int height) const {
+    // Make sure the viewport matches the new window dimensions.
+    glViewport(0, 0, width, height);
+
+    // Call the user's resize callback, if any.
+    if (mUserResizeCallback) {
+      mUserResizeCallback(width, height);
+    }
+  }
+
+public:
+  ResizeCallback mUserResizeCallback = {};
+};
+
+// ---------------------
+// GLFW Wrapper Utility.
 
 class GLFWWrapper {
 public:
@@ -30,33 +55,36 @@ public:
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // NOTE: Adding this until we get the resize callback
-    // properly integrated with or projection matrix code.
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    #ifdef __APPLE__
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+#endif
 
     // Create window.
-    mWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+    mWindow = glfwCreateWindow(INIT_SCR_WIDTH, INIT_SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
     if (mWindow == nullptr) {
       std::cout << "Failed to create GLFW window" << std::endl;
       glfwTerminate();
       return false;
     }
 
-    mDimensions = {SCR_WIDTH, SCR_HEIGHT};
+    mDimensions = {INIT_SCR_WIDTH, INIT_SCR_HEIGHT};
 
     glfwMakeContextCurrent(mWindow);
-    glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
+
+    // For use by GLFW callbacks.
+    glfwSetWindowUserPointer(mWindow, this);
+
+    // Set resize callback.
+    glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow *window, int width, int height) {
+      auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));
+      thisWindow->mDimensions = { width, height };
+      thisWindow->mCallbackInterface.resizeCallback(width, height);
+    });
 
     return true;
   }
 
-  [[nodiscard]] bool shouldClose() const {
-    return glfwWindowShouldClose(mWindow);
-  }
+  [[nodiscard]] bool shouldClose() const { return glfwWindowShouldClose(mWindow); }
 
   void processInput() const {
     // Handle key presses, currently just escape.
@@ -64,37 +92,27 @@ public:
       glfwSetWindowShouldClose(mWindow, true);
   }
 
-  void swapBuffers() const {
-    glfwSwapBuffers(mWindow);
-  }
+  void swapBuffers() const { glfwSwapBuffers(mWindow); }
 
-  static void pollEvents() {
-    glfwPollEvents();
-  }
+  static void pollEvents() { glfwPollEvents(); }
 
-  [[nodiscard]] const std::pair<float, float>& dimensions() const {
-    return mDimensions;
-  }
+  [[nodiscard]] const std::pair<float, float> &dimensions() const { return mDimensions; }
 
-  [[nodiscard]] float aspectRatio() const {
-    return mDimensions.first / mDimensions.second;
-  }
+  [[nodiscard]] float aspectRatio() const { return mDimensions.first / mDimensions.second; }
+
+  CallbackInterface &callbackInterface() { return mCallbackInterface; }
 
 private:
   GLFWwindow *mWindow = nullptr;
+
+  CallbackInterface mCallbackInterface = {};
 
   // For efficient use in glm function calls.
   std::pair<float, float> mDimensions;
 
   // Initial window dimensions.
-  static constexpr unsigned int SCR_WIDTH = 800;
-  static constexpr unsigned int SCR_HEIGHT = 600;
-
-  // Callback that GLFW calls after window is resized.
-  static void framebuffer_size_callback(GLFWwindow * /*window*/, int width, int height) {
-    // make sure the viewport matches the new window dimensions
-    glViewport(0, 0, width, height);
-  }
+  static constexpr unsigned int INIT_SCR_WIDTH = 800;
+  static constexpr unsigned int INIT_SCR_HEIGHT = 600;
 };
 
-#endif //GLFW_WRAPPER_H
+#endif // GLFW_WRAPPER_H
