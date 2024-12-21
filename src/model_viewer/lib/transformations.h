@@ -50,19 +50,16 @@ public:
   }
 
   void updateViewTransformation() {
-    constexpr float increment = 0.4f;
-    static auto rotation = glm::mat4(1.0f);
-
     // Update view matrix.
 
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, -3.0f);
-
     mViewMatrix = glm::mat4(1.0f);
-    mViewMatrix = glm::translate(mViewMatrix, position) * glm::inverse(rotation);
+    mViewMatrix = glm::translate(mViewMatrix, mCameraPosition) * glm::inverse(mViewRotation);
     mShader->setMat4("view", mViewMatrix);
+  }
 
-    // Rotation camera position vector around y-axis.
-    rotation = glm::rotate(rotation, glm::radians(increment), glm::vec3(0.0f, 1.0f, 0.0f));
+  void rotateViewTransformation(float xAngle, float yAngle) {
+    mViewRotation = glm::rotate(mViewRotation, -xAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+    mViewRotation = glm::rotate(mViewRotation, -yAngle, glm::vec3(0.0f, 1.0f, 0.0f));
   }
 
 private:
@@ -96,6 +93,9 @@ private:
   glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
   glm::mat4 mViewMatrix = glm::mat4(1.0f);
   glm::mat4 mModelMatrix = glm::mat4(1.0f);
+
+  glm::vec3 mCameraPosition = glm::vec3(0.0f, 0.0f, -3.0f);
+  glm::mat4 mViewRotation = glm::mat4(1.0f);
 };
 
 // -------

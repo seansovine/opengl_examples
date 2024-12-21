@@ -18,6 +18,7 @@
 
 class CallbackInterface {
   using ResizeCallback = std::function<void(int width, int height)>;
+  using MouseDragCallback = std::function<void(double width, double height)>;
 
 public:
   CallbackInterface() = default;
@@ -32,8 +33,33 @@ public:
     }
   }
 
+  void cursorPositionClickAndDragCallback(double xpos, double ypos, bool leftButtonDown) {
+    static bool dragging = false;
+    static double lastX;
+    static double lastY;
+
+    if (!dragging && leftButtonDown) {
+      dragging = true;
+      lastX = xpos;
+      lastY = ypos;
+    } else if (dragging && !leftButtonDown) {
+      dragging = false;
+    } else if (dragging) {
+      if (mUserMouseDragCallback) {
+        double deltaX = xpos - lastX;
+        double deltaY = ypos - lastY;
+
+        mUserMouseDragCallback(deltaX, deltaY);
+      }
+
+      lastX = xpos;
+      lastY = ypos;
+    }
+  }
+
 public:
   ResizeCallback mUserResizeCallback = {};
+  MouseDragCallback mUserMouseDragCallback = {};
 };
 
 // ---------------------
@@ -74,11 +100,19 @@ public:
     // For use by GLFW callbacks.
     glfwSetWindowUserPointer(mWindow, this);
 
+    // Set our GLFW callbacks.
+
     // Set resize callback.
-    glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow *window, int width, int height) {
+    glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow *window, int width, int height) -> void {
       auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));
-      thisWindow->mDimensions = { width, height };
+      thisWindow->mDimensions = {width, height};
       thisWindow->mCallbackInterface.resizeCallback(width, height);
+    });
+
+    glfwSetCursorPosCallback(mWindow, [](GLFWwindow *window, double xpos, double ypos) -> void {
+      bool leftButtonDown = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+      auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));
+      thisWindow->mCallbackInterface.cursorPositionClickAndDragCallback(xpos, ypos, leftButtonDown);
     });
 
     return true;

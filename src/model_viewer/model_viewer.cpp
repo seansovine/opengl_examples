@@ -67,6 +67,12 @@ int main() {
     transformations.updateProjectionTransformation(window.aspectRatio());
   };
 
+  // Set the click-and-drag callback.
+  window.callbackInterface().mUserMouseDragCallback = [&window, &transformations](float xAmt, float yAmt) {
+    transformations.rotateViewTransformation(0.05 * yAmt, 0.05 * xAmt);
+    transformations.updateViewTransformation();
+  };
+
   // -----------------
   // Main render loop.
 
@@ -78,12 +84,15 @@ int main() {
     window.swapBuffers();
     GLFWWrapper::pollEvents();
 
-    // Rotates the model by a fixed amount on each call.
-    // Right now this is not tied to a clock, so the rotation
-    // speed will be different on each system. (We'll fix that.)
-    transformations.updateModelTransformation();
-    // Camera is also rotating, on a different axis from the model.
-    transformations.updateViewTransformation();
+    constexpr bool ROTATING = false;
+    if constexpr (ROTATING) {
+      // Rotates the model by a fixed amount on each call.
+      // Right now this is not tied to a clock, so the rotation
+      // speed will be different on each system. (We'll fix that.)
+      transformations.updateModelTransformation();
+      // Camera is also rotating, on a different axis from the model.
+      transformations.updateViewTransformation();
+    }
   }
 
   return 0;
