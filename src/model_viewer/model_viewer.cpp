@@ -90,7 +90,8 @@ int main() {
       // Right now this is not tied to a clock, so the rotation
       // speed will be different on each system. (We'll fix that.)
       transformations.updateModelTransformation();
-      // Camera is also rotating, on a different axis from the model.
+      // Rotate by constant amount around x- and y-axes.
+      transformations.rotateViewTransformation(0.01, 0.01);
       transformations.updateViewTransformation();
     }
   }
