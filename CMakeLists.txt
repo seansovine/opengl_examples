@@ -3,9 +3,10 @@
 #
 # Based on gloom: https://github.com/aleksaro/gloom
 
-cmake_minimum_required (VERSION 3.28)
+cmake_minimum_required (VERSION 3.28..3.31)
 project (opengl_examples)
 
+include(FetchContent)
 
 # Based these on gloom but not sure we want all of them or not.
 
@@ -40,6 +41,18 @@ set(ASSIMP_BUILD_ASSIMP_VIEW OFF)
 set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 
 add_subdirectory(thirdparty/assimp)
+
+
+# Get fmt library.
+
+FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG 11.0.2
+        GIT_SUBMODULES_RECURSE ON
+)
+
+FetchContent_MakeAvailable(fmt)
 
 
 # Set include paths
