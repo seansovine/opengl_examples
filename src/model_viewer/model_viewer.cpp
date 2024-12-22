@@ -10,7 +10,7 @@
 
 // Note, this must be included first.
 #include "glad/glad.h"
-#include "lib/textured_model.h"
+#include "lib/textured_mesh.h"
 #include "lib/transformations.h"
 
 #include <learnopengl/filesystem.h>
@@ -25,11 +25,11 @@
 
 bool gl_configure();
 
-using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedModel>>;
+using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedMesh>>;
 
 ShaderAndModel loadShaderAndModel();
 
-void render(const TexturedModel *model);
+void render(const TexturedMesh *model);
 
 // -------------
 // Program main.
@@ -135,7 +135,7 @@ ShaderAndModel loadShaderAndModel() {
   ourShader->setInt("texture1", 0);
 
   // Load model
-  auto model = std::make_shared<TexturedModel>(std::move(texture1));
+  auto model = std::make_shared<TexturedMesh>(std::move(texture1));
 
   return {ourShader, model};
 }
@@ -143,7 +143,7 @@ ShaderAndModel loadShaderAndModel() {
 // ----------------------------
 // Call OpenGL rendering funcs.
 
-void render(const TexturedModel *model) {
+void render(const TexturedMesh *model) {
   // Clear buffers. Use black background.
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

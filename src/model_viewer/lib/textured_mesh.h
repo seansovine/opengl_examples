@@ -43,10 +43,10 @@ static constexpr float sModelXYZUVVertices[] = {
 
 // Represents a model with x, y, z coords followed by u, v texture coords.
 
-class TexturedModel {
+class TexturedMesh {
 public:
   /// Takes ownership of texture.
-  explicit TexturedModel(std::shared_ptr<GLTexture>&& texture) {
+  explicit TexturedMesh(std::shared_ptr<GLTexture>&& texture) {
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
     glBindVertexArray(mVAO);
@@ -66,9 +66,9 @@ public:
     mTexture = texture;
   }
 
-  TexturedModel(const TexturedModel&) = delete;
+  TexturedMesh(const TexturedMesh&) = delete;
 
-  ~TexturedModel() {
+  ~TexturedMesh() {
     // de-allocate now
     glDeleteVertexArrays(1, &mVAO);
     glDeleteBuffers(1, &mVBO);
