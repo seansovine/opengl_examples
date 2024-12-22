@@ -32,6 +32,16 @@ option (GLFW_BUILD_TESTS OFF)
 add_subdirectory (thirdparty/glfw)
 
 
+# Add Assimp
+
+set(ASSIMP_INSTALL OFF)
+set(ASSIMP_INSTALL_PDB OFF)
+set(ASSIMP_BUILD_ASSIMP_VIEW OFF)
+set(ASSIMP_WARNINGS_AS_ERRORS OFF)
+
+add_subdirectory(thirdparty/assimp)
+
+
 # Set include paths
 
 include_directories (src/
