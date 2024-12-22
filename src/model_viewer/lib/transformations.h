@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <memory>
 
-void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle);
-
 // ----------------
 // Transformations.
 
@@ -97,10 +95,20 @@ private:
     mShader->setMat4("model", mModelMatrix);
   }
 
+  // Helper for constructing the model matrix.
+  void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle) const {
+    model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f));
+    model = glm::scale(model, glm::vec3(mScaleFactor, mScaleFactor, mScaleFactor));
+  }
+
 private:
   std::shared_ptr<Shader> mShader;
 
+  // Camera field of view.
   double mFoV = 45.0f;
+  // Model scale factor.
+  float mScaleFactor = 0.2f;
 
   glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
   glm::mat4 mViewMatrix = glm::mat4(1.0f);
@@ -109,18 +117,5 @@ private:
   glm::vec3 mCameraPosition = glm::vec3(0.0f, 0.0f, -3.0f);
   glm::mat4 mViewRotation = glm::mat4(1.0f);
 };
-
-// -------
-// Helpers
-
-// Helper for constructing the model matrix.
-// NOTE: We define this in the header for now; if
-// the program grows we'll move things to a .cpp.
-inline void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle) {
-  model = glm::translate(model, position);
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f));
-  float scale_factor = 0.7f;
-  model = glm::scale(model, glm::vec3(scale_factor, scale_factor, scale_factor));
-}
 
 #endif // TRANSFORMATIONS_H
