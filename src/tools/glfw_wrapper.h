@@ -109,6 +109,7 @@ public:
       thisWindow->mCallbackInterface.resizeCallback(width, height);
     });
 
+    // Set callback to handle click and drag.
     glfwSetCursorPosCallback(mWindow, [](GLFWwindow *window, double xpos, double ypos) -> void {
       bool leftButtonDown = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
       auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));

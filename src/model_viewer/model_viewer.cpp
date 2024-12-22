@@ -68,7 +68,7 @@ int main() {
   };
 
   // Set the click-and-drag callback.
-  window.callbackInterface().mUserMouseDragCallback = [&window, &transformations](float xAmt, float yAmt) {
+  window.callbackInterface().mUserMouseDragCallback = [&transformations](float xAmt, float yAmt) {
     transformations.rotateViewTransformation(0.05 * yAmt, 0.05 * xAmt);
     transformations.updateViewTransformation();
   };
@@ -91,7 +91,7 @@ int main() {
       // speed will be different on each system. (We'll fix that.)
       transformations.updateModelTransformation();
       // Rotate by constant amount around x- and y-axes.
-      transformations.rotateViewTransformation(0.01, 0.01);
+      transformations.rotateViewTransformation(0.01, 0.0);
       transformations.updateViewTransformation();
     }
   }
