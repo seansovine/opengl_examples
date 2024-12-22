@@ -39,13 +39,15 @@ public:
     setup();
   }
 
-  void Draw(Shader &) {
+  void Draw(Shader &) const {
+    // Bind my VAO and draw it.
     glBindVertexArray(mVAO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
 
     // TODO: When we add textures, activate them here.
 
+    // Unbind this VAO.
+    glBindVertexArray(0);
     // Reset bound texture, though we aren't using them yet.
     glActiveTexture(GL_TEXTURE0);
   }
@@ -58,9 +60,9 @@ private:
 
     glBindVertexArray(mVAO);
 
+    // NOTE: This is assuming that our struct and the glm
+    // types are laid out in memory sequentially with no padding.
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    // NOTE: This is assuming that our struct and the glm types
-    // are laid out in memory sequentially with no padding.
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mVertices.size()) * sizeof(Vertex), &mVertices[0],
                  GL_STATIC_DRAW);
 
@@ -69,8 +71,11 @@ private:
                  &mIndices[0], GL_STATIC_DRAW);
 
     // TODO: Here we only bind vertices. Later add textures.
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), static_cast<void *>(nullptr));
+
+    // Unbind this VAO since we're done.
     glBindVertexArray(0);
   }
 
@@ -96,6 +101,13 @@ public:
     }
   }
 
+  // Draw each mesh.
+  void Draw(Shader &shader) {
+    for (const auto &mesh : mMeshes) {
+      mesh.Draw(shader);
+    }
+  }
+
 private:
   bool load(const std::string &path) {
     Assimp::Importer importer;
@@ -115,8 +127,8 @@ private:
   void processNode(aiNode *node, const aiScene *scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-      // TODO: Create mesh and store in vector.
-      processMesh(mesh, scene);
+
+      mMeshes.push_back(processMesh(mesh, scene));
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -124,10 +136,32 @@ private:
     }
   }
 
-  void processMesh(aiMesh *mesh, const aiScene *scene) {
-    // TODO: Lots of stuff goes here...
+  static Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
 
-    {
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+      Vertex vertex = {};
+      glm::vec3 vector;
+
+      vector.x = mesh->mVertices[i].x;
+      vector.y = mesh->mVertices[i].y;
+      vector.z = mesh->mVertices[i].z;
+      vertex.mPosition = vector;
+
+      vertices.push_back(vertex);
+    }
+
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+      aiFace &face = mesh->mFaces[i];
+
+      for (unsigned int j = 0; j < face.mNumIndices; j++) {
+        indices.push_back(face.mIndices[j]);
+      }
+    }
+
+    { // TODO: Lots of stuff for handling textures goes here.
+
       aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
       auto numDiffuseTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
@@ -140,11 +174,14 @@ private:
         fmt::print("We found some textures!\n");
       }
     }
+
+    // Return new mesh.
+
+    return {vertices, indices};
   }
 
 private:
   std::vector<Mesh> mMeshes;
-  std::vector<unsigned int> mIndices;
 };
 
 #endif // MODEL_DATA_H

@@ -135,7 +135,7 @@ glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes
 # Model viewer application.
 set(model_viewer_sources
         src/model_viewer/model_viewer.cpp
-        src/model_viewer/lib/textured_model.h
+        src/model_viewer/lib/textured_mesh.h
         thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
 
@@ -144,3 +144,11 @@ set(assimp_demo_sources
         src/model_viewer/assimp_load_demo.cpp)
 glex_add_executable(assimp_demo "${assimp_demo_sources}") # Quotes needed to pass whole list.
 target_link_libraries(assimp_demo assimp fmt)
+
+# Model viewer application - Assimp version.
+set(model_viewer_assimp_sources
+        src/model_viewer/model_viewer_assimp.cpp
+        src/model_viewer/lib/textured_mesh.h
+        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
+glex_add_executable(model_viewer_assimp "${model_viewer_assimp_sources}") # Quotes needed to pass whole list.
+target_link_libraries(model_viewer_assimp assimp fmt)
