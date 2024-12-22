@@ -14,3 +14,7 @@
 	path = thirdparty/stb
 	url = https://github.com/nothings/stb.git
 	branch = master
+[submodule "thirdparty/assimp"]
+	path = thirdparty/assimp
+	url = git@github.com:assimp/assimp.git
+
