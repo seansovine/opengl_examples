@@ -7,12 +7,19 @@ It has a convenient CMake build system adapted from
 [gloom](https://github.com/aleksaro/gloom). The programs in `src/examples`
 are small adaptations of the _learnopengl.com_ examples.
 
+## Model viewer
+
 The main project is in [src/model_viewer](src/model_viewer).
-So far it shows a textured cube in the center of the window, and
-you can click and drag with the mouse to rotate the object around
-the x- and y-axes.
-Next I plan to add the ability to load arbitrary textured models,
-and later I'll experiment with some effects like lighting and shadow.
-It's currently using the cube model and some utility code from
-_learnopengl.com_, along with some of the infrastructure we're slowly
-building up for working with OpenGL graphics.
+So far it shows a model loaded from a given file in the center of the window, and
+allows the user to click and drag with the mouse to rotate the object around
+the x- and y-axes and zoom in and out using the scroll wheel.
+I have added the ability to load arbitrary models using Assimp, following
+the examples in _learnopengl.com_. 
+This uses some code from _learnopengl.com_, like the Shader class and
+the main outline of the Model and Mesh classes,
+along with some of our own infrastructure we're slowly
+building up for working with OpenGL graphics as we work through the tutorial.
+
+Next I will add code to load and
+apply the textures loaded with the model, and after that, I plan to
+experiment with some effects like lighting and shadow.
