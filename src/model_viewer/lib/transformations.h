@@ -1,3 +1,10 @@
+// Class for managing matrices for transforming
+// model coordinates into device coordinates.
+//
+// Following www.learnopengl.com, it uses a model,
+// view, and projection matrix to do this, and passes
+// these to the active shader through uniforms with
+// the same names.
 //
 // Created by sean on 12/10/24.
 //
@@ -71,9 +78,7 @@ public:
   }
 
 private:
-  // NOTE: Assumes we don't resize the window.
-  // We could have the window resize callback call this to
-  // update the aspect ratio in the perspective transformation.
+  // Creates initial model, view, projection matrices.
   void setupMatrices(const float aspectRatio) {
     // Matrices are based on www.learnopengl.com coordinate systems example.
 
@@ -110,12 +115,15 @@ private:
   // Model scale factor.
   float mScaleFactor = 0.2f;
 
+  // Position of camera relative to object in world.
+  glm::vec3 mCameraPosition = glm::vec3(0.0f, 0.0f, -3.0f);
+
+  // Rotation of camera frame relative to world frame.
+  glm::mat4 mViewRotation = glm::mat4(1.0f);
+
   glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
   glm::mat4 mViewMatrix = glm::mat4(1.0f);
   glm::mat4 mModelMatrix = glm::mat4(1.0f);
-
-  glm::vec3 mCameraPosition = glm::vec3(0.0f, 0.0f, -3.0f);
-  glm::mat4 mViewRotation = glm::mat4(1.0f);
 };
 
 #endif // TRANSFORMATIONS_H
