@@ -58,6 +58,7 @@ FetchContent_MakeAvailable(fmt)
 # Set include paths
 
 include_directories (src/
+                     thirdparty/assimp/include/
                      thirdparty/glad/include/
                      thirdparty/glfw/include/
                      thirdparty/glm/
@@ -131,8 +132,15 @@ set(coordinate_systems_sources
         thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.
 
+# Model viewer application.
 set(model_viewer_sources
         src/model_viewer/model_viewer.cpp
         src/model_viewer/lib/textured_model.h
         thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
+
+# Assimp demo program.
+set(assimp_demo_sources
+        src/model_viewer/assimp_load_demo.cpp)
+glex_add_executable(assimp_demo "${assimp_demo_sources}") # Quotes needed to pass whole list.
+target_link_libraries(assimp_demo assimp fmt)
