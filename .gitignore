@@ -1,5 +1,8 @@
 .vscode
 .idea
+
 build/
 cmake-build-debug/
+
+sketch/
 README_uncommitted.md
