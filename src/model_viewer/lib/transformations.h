@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <learnopengl/shader_m.h>
 
+#include <algorithm>
 #include <memory>
 
 void makeModelMatrix(glm::mat4 &model, const glm::vec3 &position, float angle);
@@ -27,8 +28,17 @@ public:
   }
 
   void updateProjectionTransformation(float aspectRatio) {
-    mProjectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+    mProjectionMatrix = glm::perspective(glm::radians(static_cast<float>(mFoV)), aspectRatio, 0.1f, 100.0f);
     mShader->setMat4("projection", mProjectionMatrix);
+  }
+
+  void updateFoV(double delta) {
+    mFoV -= delta;
+
+    constexpr double FOV_MIN = 1.0;
+    constexpr double FOV_MAX = 60.0;
+
+    mFoV = std::clamp(mFoV, FOV_MIN, FOV_MAX);
   }
 
   void updateModelTransformation() {
@@ -70,7 +80,7 @@ private:
     // Matrices are based on www.learnopengl.com coordinate systems example.
 
     // Performs perspective projection.
-    mProjectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+    mProjectionMatrix = glm::perspective(glm::radians(static_cast<float>(mFoV)), aspectRatio, 0.1f, 100.0f);
 
     // Converts world coordinates to camera viewpoint coordinates.
     mViewMatrix = glm::translate(mViewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -89,6 +99,8 @@ private:
 
 private:
   std::shared_ptr<Shader> mShader;
+
+  double mFoV = 45.0f;
 
   glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
   glm::mat4 mViewMatrix = glm::mat4(1.0f);

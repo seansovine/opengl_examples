@@ -85,6 +85,12 @@ int main() {
     transformations.updateViewTransformation();
   };
 
+  // Set mouse wheel zoom callback.
+  window.callbackInterface().mUserMouseScrollCallback = [&window, &transformations](double, double yDelta) {
+    transformations.updateFoV(yDelta);
+    transformations.updateProjectionTransformation(window.aspectRatio());
+  };
+
   // -----------------
   // Main render loop.
 

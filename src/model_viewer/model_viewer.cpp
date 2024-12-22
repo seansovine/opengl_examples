@@ -67,10 +67,16 @@ int main() {
     transformations.updateProjectionTransformation(window.aspectRatio());
   };
 
-  // Set the click-and-drag callback.
-  window.callbackInterface().mUserMouseDragCallback = [&transformations](float xAmt, float yAmt) {
+  // Set the click-and-drag rotation callback.
+  window.callbackInterface().mUserMouseDragCallback = [&transformations](double xAmt, double yAmt) {
     transformations.rotateViewTransformation(0.05 * yAmt, 0.05 * xAmt);
     transformations.updateViewTransformation();
+  };
+
+  // Set mouse wheel zoom callback.
+  window.callbackInterface().mUserMouseScrollCallback = [&window, &transformations](double, double yDelta) {
+    transformations.updateFoV(yDelta);
+    transformations.updateProjectionTransformation(window.aspectRatio());
   };
 
   // -----------------

@@ -19,6 +19,7 @@
 class CallbackInterface {
   using ResizeCallback = std::function<void(int width, int height)>;
   using MouseDragCallback = std::function<void(double width, double height)>;
+  using MouseScrollCallback = std::function<void(double xDelta, double yDelta)>;
 
 public:
   CallbackInterface() = default;
@@ -33,7 +34,7 @@ public:
     }
   }
 
-  void cursorPositionClickAndDragCallback(double xpos, double ypos, bool leftButtonDown) {
+  void cursorPositionClickAndDragCallback(double xpos, double ypos, bool leftButtonDown) const {
     static bool dragging = false;
     static double lastX;
     static double lastY;
@@ -57,9 +58,16 @@ public:
     }
   }
 
+  void mouseScrollCallback(double xDelta, double yDelta) const {
+    if (mUserMouseScrollCallback) {
+      mUserMouseScrollCallback(xDelta, yDelta);
+    }
+  }
+
 public:
   ResizeCallback mUserResizeCallback = {};
   MouseDragCallback mUserMouseDragCallback = {};
+  MouseScrollCallback mUserMouseScrollCallback = {};
 };
 
 // ---------------------
@@ -114,6 +122,12 @@ public:
       bool leftButtonDown = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
       auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));
       thisWindow->mCallbackInterface.cursorPositionClickAndDragCallback(xpos, ypos, leftButtonDown);
+    });
+
+    // Set mouse scroll wheel callback.
+    glfwSetScrollCallback(mWindow, [](GLFWwindow *window, double xDelta, double yDelta) -> void {
+      auto thisWindow = static_cast<GLFWWrapper *>(glfwGetWindowUserPointer(window));
+      thisWindow->mCallbackInterface.mouseScrollCallback(xDelta, yDelta);
     });
 
     return true;
