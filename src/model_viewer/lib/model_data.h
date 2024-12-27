@@ -1,5 +1,6 @@
-// Structures for loading, storing, and drawing
-// data for a model loaded with Assimp.
+// Some model loading infrastructure for loading, storing, and drawing
+// data for a model loaded with Assimp. Modeled very closely from the
+// mesh class on www.learnopengl.com.
 //
 // Created by sean on 12/22/24.
 //
@@ -15,82 +16,21 @@
 #include <fmt/core.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+// See comments in std_image.h explaining this.
+#define STB_IMAGE_IMPLEMENTATION
+#include "mesh_data.h"
+
 #include <learnopengl/shader_m.h>
+#include <stb_image.h>
 
-// Some model loading infrastructure.
-// TODO: Will get moved to its own file(s).
-
-// ------------------
-// Vertex POD struct.
-
-struct Vertex {
-  glm::vec3 mPosition;
-  glm::vec2 mTextureCooords;
-};
-
-// ---------------------------------------
-// Mesh class -- for now without textures.
-//  Based heavily on Joey DeVries' mesh class.
-
-class Mesh {
-public:
-  Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
-      : mVertices{vertices}, mIndices{indices} {
-    setup();
-  }
-
-  void Draw(Shader &) const {
-    // Bind my VAO and draw it.
-    glBindVertexArray(mVAO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
-
-    // TODO: When we add textures, activate them here.
-
-    // Unbind this VAO.
-    glBindVertexArray(0);
-    // Reset bound texture, though we aren't using them yet.
-    glActiveTexture(GL_TEXTURE0);
-  }
-
-private:
-  void setup() {
-    glGenVertexArrays(1, &mVAO);
-    glGenBuffers(1, &mVBO);
-    glGenBuffers(1, &mEBO);
-
-    glBindVertexArray(mVAO);
-
-    // NOTE: This is assuming that our struct and the glm
-    // types are laid out in memory sequentially with no padding.
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mVertices.size()) * sizeof(Vertex), &mVertices[0],
-                 GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(mIndices.size()) * sizeof(unsigned int),
-                 &mIndices[0], GL_STATIC_DRAW);
-
-    // TODO: Here we only bind vertices. Later add textures.
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), static_cast<void *>(nullptr));
-
-    // Unbind this VAO since we're done.
-    glBindVertexArray(0);
-  }
-
-private:
-  std::vector<Vertex> mVertices;
-  std::vector<unsigned int> mIndices;
-
-  unsigned int mVAO = 0;
-  unsigned int mVBO = 0;
-  unsigned int mEBO = 0;
-};
+#include <map>
 
 // --------------------------------------
 // Model class -- holds a model's meshes.
 //  Based heavily on Joey DeVries' model class.
+
+unsigned int textureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
 class Model {
 public:
@@ -102,7 +42,7 @@ public:
   }
 
   // Draw each mesh.
-  void Draw(Shader &shader) {
+  void draw(Shader &shader) {
     for (const auto &mesh : mMeshes) {
       mesh.Draw(shader);
     }
@@ -118,6 +58,8 @@ private:
     } else {
       return false;
     }
+
+    mDirectory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
 
@@ -136,7 +78,7 @@ private:
     }
   }
 
-  static Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
+  Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -149,6 +91,14 @@ private:
       vector.z = mesh->mVertices[i].z;
       vertex.mPosition = vector;
 
+      // We always use the first set of texture coords.
+      if (mesh->mTextureCoords[0]) {
+        glm::vec2 vec;
+        vec.x = mesh->mTextureCoords[0][i].x;
+        vec.y = mesh->mTextureCoords[0][i].y;
+        vertex.mTextureCoords = vec;
+      }
+
       vertices.push_back(vertex);
     }
 
@@ -160,28 +110,100 @@ private:
       }
     }
 
-    { // TODO: Lots of stuff for handling textures goes here.
+    std::vector<Texture> textures;
+    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-      aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
+    { // NOTE: For testing and debugging.
       auto numDiffuseTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
       auto numSpecularTextures = material->GetTextureCount(aiTextureType_SPECULAR);
       // NOTE: We use De Vries' terminology for these two.
       auto numNormalTextures = material->GetTextureCount(aiTextureType_HEIGHT);
-      auto numheightTextures = material->GetTextureCount(aiTextureType_AMBIENT);
+      auto numHeightTextures = material->GetTextureCount(aiTextureType_AMBIENT);
 
-      if (numDiffuseTextures + numSpecularTextures + numNormalTextures + numheightTextures > 0) {
+      constexpr bool EXTRA_DEBUG_OUT = false;
+      if (EXTRA_DEBUG_OUT &&
+          numDiffuseTextures + numSpecularTextures + numNormalTextures + numHeightTextures > 0) {
         fmt::print("We found some textures!\n");
       }
     }
 
+    std::vector<Texture> diffuseMaps = loadTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
     // Return new mesh.
 
-    return {vertices, indices};
+    return {vertices, indices, textures};
+  }
+
+  std::vector<Texture> loadTextures(aiMaterial *mat, aiTextureType type, std::string typeName) {
+    std::vector<Texture> textures;
+
+    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+      aiString str;
+      mat->GetTexture(type, i, &str);
+
+      if (mLoadedMeshPaths.contains(str.C_Str())) {
+        const Texture &texture = mLoadedTextures[mLoadedMeshPaths[str.C_Str()]];
+        mLoadedTextures.push_back(texture);
+      } else {
+        Texture texture;
+        texture.id = textureFromFile(str.C_Str(), this->mDirectory);
+        texture.type = typeName;
+        texture.path = str.C_Str();
+
+        textures.push_back(texture);
+        mLoadedTextures.push_back(texture);
+        mLoadedMeshPaths[str.C_Str()] = mLoadedTextures.size() - 1;
+      }
+    }
+
+    return textures;
   }
 
 private:
   std::vector<Mesh> mMeshes;
+  std::map<std::string, std::size_t> mLoadedMeshPaths;
+  std::vector<Texture> mLoadedTextures;
+  std::string mDirectory;
 };
+
+// -----------------------------------------------------
+// Borrowed directly from www.learnopengl.com `model.h`.
+
+inline unsigned int textureFromFile(const char *path, const std::string &directory, bool gamma) {
+  std::string filename = std::string(path);
+  filename = directory + "/textures/" + filename;
+
+  unsigned int textureID;
+  glGenTextures(1, &textureID);
+
+  int width, height, nrComponents;
+  unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+  if (data) {
+    GLenum format;
+    if (nrComponents == 1)
+      format = GL_RED;
+    else if (nrComponents == 3)
+      format = GL_RGB;
+    else if (nrComponents == 4)
+      format = GL_RGBA;
+
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+  } else {
+    stbi_image_free(data);
+    throw std::runtime_error("Texture failed to load at path: " + filename + ".");
+  }
+
+  return textureID;
+}
 
 #endif // MODEL_DATA_H

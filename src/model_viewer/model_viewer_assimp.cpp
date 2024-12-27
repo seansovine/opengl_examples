@@ -100,7 +100,7 @@ int main() {
     ourShader->use();
     clearBuffers();
 
-    model.Draw(*ourShader);
+    model.draw(*ourShader);
     window.swapBuffers();
 
     GLFWWrapper::pollEvents();

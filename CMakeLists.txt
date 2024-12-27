@@ -4,7 +4,12 @@
 # Based on gloom: https://github.com/aleksaro/gloom
 
 cmake_minimum_required (VERSION 3.28..3.31)
+
 project (opengl_examples)
+
+# For set.contains, at least.
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
 
@@ -149,6 +154,8 @@ target_link_libraries(assimp_demo assimp fmt)
 set(model_viewer_assimp_sources
         src/model_viewer/model_viewer_assimp.cpp
         src/model_viewer/lib/textured_mesh.h
+        src/model_viewer/lib/model_data.h
+        src/model_viewer/lib/mesh_data.h
         thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer_assimp "${model_viewer_assimp_sources}") # Quotes needed to pass whole list.
 target_link_libraries(model_viewer_assimp assimp fmt)
