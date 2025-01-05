@@ -44,7 +44,7 @@ public:
   // Draw each mesh.
   void draw(Shader &shader) {
     for (const auto &mesh : mMeshes) {
-      mesh.Draw(shader);
+      mesh.draw(shader);
     }
   }
 

@@ -8,16 +8,19 @@
 // Created by sean on 12/22/24.
 //
 
+// clang-format off
 // Note, this must be included first.
 #include "glad/glad.h"
-#include "lib/model_data.h"
-#include "lib/transformations.h"
+
+#include "tools/model_data.h"
+#include "tools/transformations.h"
 
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <tools/glfw_wrapper.h>
 
 #include <memory>
+// clang-format off
 
 // -------
 // Config.

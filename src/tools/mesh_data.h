@@ -41,7 +41,7 @@ public:
     setup();
   }
 
-  void Draw(Shader &shader) const {
+  void draw(Shader &shader) const {
     // Bind my VAO and draw it.
     glBindVertexArray(mVAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, nullptr);

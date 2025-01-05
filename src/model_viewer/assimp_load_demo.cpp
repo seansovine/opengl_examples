@@ -5,7 +5,7 @@
 // Created by sean on 12/21/24.
 // Our work is inspired by www.learnopengl.com.
 
-#include "lib/model_data.h"
+#include "../tools/model_data.h"
 #include "root_directory.h"
 
 #include <fmt/core.h>

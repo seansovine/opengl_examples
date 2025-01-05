@@ -134,14 +134,16 @@ glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed 
 # De Vries' coordinate systems example.
 set(coordinate_systems_sources
         src/examples/coordinate_systems/coordinate_systems_multiple_de_vries.cpp
-        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
+        thirdparty/stb/stb_image.h
+        src/tools/glfw_wrapper.h)
 glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.
 
 # Model viewer application.
 set(model_viewer_sources
         src/model_viewer/model_viewer.cpp
         src/model_viewer/lib/textured_mesh.h
-        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
+        thirdparty/stb/stb_image.h
+        src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
 
 # Assimp demo program.
@@ -154,8 +156,17 @@ target_link_libraries(assimp_demo assimp fmt)
 set(model_viewer_assimp_sources
         src/model_viewer/model_viewer_assimp.cpp
         src/model_viewer/lib/textured_mesh.h
-        src/model_viewer/lib/model_data.h
-        src/model_viewer/lib/mesh_data.h
-        thirdparty/stb/stb_image.h src/tools/glfw_wrapper.h)
+        src/tools/model_data.h
+        src/tools/mesh_data.h
+        thirdparty/stb/stb_image.h
+        src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer_assimp "${model_viewer_assimp_sources}") # Quotes needed to pass whole list.
 target_link_libraries(model_viewer_assimp assimp fmt)
+
+# Function grapher application.
+set(function_grapher_sources
+        src/function_grapher/function_grapher.cpp
+        src/tools/glfw_wrapper.h
+        src/function_grapher/lib/function_mesh.h)
+glex_add_executable(function_grapher "${function_grapher_sources}")
+target_link_libraries(function_grapher fmt)
