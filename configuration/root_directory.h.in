@@ -1,3 +1,8 @@
 // Borrowed from De Vries LearnOpenGL repo.
 
-const char * project_root = "${CMAKE_SOURCE_DIR}";
+#ifndef PROJECT_ROOT_H
+#define PROJECT_ROOT_H
+
+inline const char * project_root = "${CMAKE_SOURCE_DIR}";
+
+#endif

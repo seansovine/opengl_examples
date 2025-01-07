@@ -7,8 +7,6 @@
 
 #include "glad/glad.h"
 
-// See comments in std_image.h explaining this.
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include <learnopengl/filesystem.h>
@@ -17,7 +15,7 @@
 
 class GLTexture {
 public:
-  explicit GLTexture(const std::string& filename, GLenum format) {
+  explicit  GLTexture(const std::string& filename, GLenum format) {
     glGenTextures(1, &mGlHandle);
     glBindTexture(GL_TEXTURE_2D, mGlHandle);
 

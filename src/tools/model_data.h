@@ -8,7 +8,10 @@
 #ifndef MODEL_DATA_H
 #define MODEL_DATA_H
 
+// clang-format off
 #include "glad/glad.h"
+
+#include "mesh_data.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -17,14 +20,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// See comments in std_image.h explaining this.
-#define STB_IMAGE_IMPLEMENTATION
-#include "mesh_data.h"
-
 #include <learnopengl/shader_m.h>
-#include <stb_image.h>
 
 #include <map>
+// clang-format on
 
 // --------------------------------------
 // Model class -- holds a model's meshes.
@@ -166,44 +165,5 @@ private:
   std::vector<Texture> mLoadedTextures;
   std::string mDirectory;
 };
-
-// -----------------------------------------------------
-// Borrowed directly from www.learnopengl.com `model.h`.
-
-inline unsigned int textureFromFile(const char *path, const std::string &directory, bool gamma) {
-  std::string filename = std::string(path);
-  filename = directory + "/textures/" + filename;
-
-  unsigned int textureID;
-  glGenTextures(1, &textureID);
-
-  int width, height, nrComponents;
-  unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-  if (data) {
-    GLenum format;
-    if (nrComponents == 1)
-      format = GL_RED;
-    else if (nrComponents == 3)
-      format = GL_RGB;
-    else if (nrComponents == 4)
-      format = GL_RGBA;
-
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-  } else {
-    stbi_image_free(data);
-    throw std::runtime_error("Texture failed to load at path: " + filename + ".");
-  }
-
-  return textureID;
-}
 
 #endif // MODEL_DATA_H

@@ -9,36 +9,30 @@
 //
 
 // clang-format off
-// Note, this must be included first.
-#include "glad/glad.h"
+#include "lib/model_viewer.h"
+
+// We need this define and include combination exactly once.
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include <learnopengl/filesystem.h>
-#include <learnopengl/shader_m.h>
-
-#include <tools/glfw_wrapper.h>
 #include <tools/model_data.h>
-#include <tools/transformations.h>
-
-#include <memory>
 // clang-format on
 
-// -------
-// Config.
+// --------------
+// Configuration.
 
-constexpr bool CONSTANT_ROTATION = false;
+static constexpr Config CONFIG{
+    .wireframe = true,
+    .constantRotation = false,
+};
 
 static const auto modelPath = std::string(project_root) + "/resources/learnopengl/backpack.obj";
 
 // -------------
 // Helper decls.
 
-bool gl_configure();
-
 std::shared_ptr<Shader> loadShader();
-
-void clearBuffers();
-
-void applyConstantRotations(Transformations &transformations);
 
 // -------------
 // Program main.
@@ -55,7 +49,7 @@ int main() {
   }
 
   // Load GL functions and set options.
-  bool configured = gl_configure();
+  bool configured = configureGL(CONFIG);
 
   if (!configured) {
     return -1;
@@ -78,21 +72,7 @@ int main() {
   Transformations transformations{ourShader, window.aspectRatio()};
 
   // Set our resize callback that updates the projection.
-  window.callbackInterface().mUserResizeCallback = [&window, &transformations](float, float) {
-    transformations.updateProjectionTransformation(window.aspectRatio());
-  };
-
-  // Set the click-and-drag callback.
-  window.callbackInterface().mUserMouseDragCallback = [&transformations](float xAmt, float yAmt) {
-    transformations.rotateViewTransformation(0.05 * yAmt, 0.05 * xAmt);
-    transformations.updateViewTransformation();
-  };
-
-  // Set mouse wheel zoom callback.
-  window.callbackInterface().mUserMouseScrollCallback = [&window, &transformations](double, double yDelta) {
-    transformations.updateFoV(yDelta);
-    transformations.updateProjectionTransformation(window.aspectRatio());
-  };
+  setCallbacks(window, transformations);
 
   // -----------------
   // Main render loop.
@@ -108,8 +88,8 @@ int main() {
 
     GLFWWrapper::pollEvents();
 
-    if constexpr (CONSTANT_ROTATION) {
-      applyConstantRotations(transformations);
+    if constexpr (CONFIG.constantRotation) {
+      constantRotation(transformations);
     }
   }
 
@@ -119,41 +99,10 @@ int main() {
 // ------------
 // Helper defs.
 
-bool gl_configure() {
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cout << "Failed to initialize GLAD" << std::endl;
-
-    return false; // Early return.
-  }
-
-  glEnable(GL_DEPTH_TEST);
-
-  return true;
-}
-
 std::shared_ptr<Shader> loadShader() {
   std::string vertexShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer_assimp.vs");
   std::string fragmentShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer_assimp.fs");
 
   // Load shaders.
   return std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
-}
-
-void clearBuffers() {
-  // Clear buffers. Use black background.
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void applyConstantRotations(Transformations &transformations) {
-  // Rotates the model by a fixed amount on each call.
-
-  // TODO: Right now this is not tied to a clock, so
-  // the rotation speed will be different on each system.
-
-  transformations.updateModelTransformation();
-
-  // Rotate by constant amount around x- and y-axes.
-  transformations.rotateViewTransformation(0.01, 0.0);
-  transformations.updateViewTransformation();
 }

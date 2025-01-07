@@ -140,11 +140,15 @@ glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes
 
 # Model viewer application.
 set(model_viewer_sources
-        src/model_viewer/model_viewer.cpp
+        src/model_viewer/model_viewer_main.cpp
+        src/model_viewer/lib/model_viewer.cpp
         src/model_viewer/lib/textured_mesh.h
         thirdparty/stb/stb_image.h
-        src/tools/glfw_wrapper.h)
+        src/tools/glfw_wrapper.h
+)
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
+
+target_include_directories(model_viewer PUBLIC src/model_viewer)
 target_link_libraries(model_viewer fmt)
 
 # Assimp demo program.
@@ -156,12 +160,17 @@ target_link_libraries(assimp_demo assimp fmt)
 # Model viewer application - Assimp version.
 set(model_viewer_assimp_sources
         src/model_viewer/model_viewer_assimp.cpp
+        src/model_viewer/lib/model_viewer.cpp
         src/model_viewer/lib/textured_mesh.h
         src/tools/model_data.h
+        src/tools/model_data.cpp
         src/tools/mesh_data.h
         thirdparty/stb/stb_image.h
-        src/tools/glfw_wrapper.h)
+        src/tools/glfw_wrapper.h
+)
 glex_add_executable(model_viewer_assimp "${model_viewer_assimp_sources}") # Quotes needed to pass whole list.
+
+target_include_directories(model_viewer_assimp PUBLIC src/model_viewer)
 target_link_libraries(model_viewer_assimp assimp fmt)
 
 # Function grapher application.

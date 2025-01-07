@@ -11,7 +11,6 @@
 #include "glad/glad.h"
 
 #include <learnopengl/shader_m.h>
-
 #include <tools/gl_texture.h>
 
 #include <memory>
