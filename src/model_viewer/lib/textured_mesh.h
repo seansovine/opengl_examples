@@ -7,12 +7,16 @@
 #ifndef TEXTURED_MODEL_H
 #define TEXTURED_MODEL_H
 
+// clang-format off
 #include "glad/glad.h"
+
+#include <learnopengl/shader_m.h>
 
 #include <tools/gl_texture.h>
 
 #include <memory>
 #include <vector>
+// clang-format on
 
 // -------------
 // TexturedModel
@@ -23,7 +27,7 @@ class TexturedMesh {
 public:
   /// Takes ownership of texture.
   explicit TexturedMesh(const std::shared_ptr<GLTexture> &texture, const std::vector<float> &model) {
-    const float* vertices = model.data();
+    const float *vertices = model.data();
 
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
@@ -41,7 +45,7 @@ public:
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    mCount = std::size(model) / 5;
+    mCount = static_cast<int>(std::size(model) / 5);
     mTexture = texture;
   }
 
@@ -55,15 +59,18 @@ public:
 
   [[nodiscard]] unsigned int VAO() const { return mVAO; }
 
-  [[nosdiscard]] int vertexCount() const { return mCount; }
+  [[nodiscard]] int vertexCount() const { return mCount; }
 
-  void bindTexture(GLenum textureUnit) const { mTexture->bind(textureUnit); }
+  void bindTexture(int textureNum) {
+    mTextureNum = textureNum;
+    mTexture->bind(GL_TEXTURE0 + textureNum);
+  }
 
-  //
+  // Draw my triangles.
 
-  void draw(GLenum textureUnit) const {
-    // Bind texture to OpenGL texture unit.
-    bindTexture(textureUnit);
+  void draw(Shader *shader) const {
+    // Pass our texture number as uniform on shader.
+    shader->setInt("texture1", mTextureNum);
 
     // Bind VAO.
     glBindVertexArray(mVAO);
@@ -77,6 +84,7 @@ private:
   unsigned int mVBO = 0;
   int mCount = 0;
 
+  int mTextureNum = -1;
   std::shared_ptr<GLTexture> mTexture;
 };
 

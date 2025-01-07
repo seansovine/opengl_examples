@@ -104,8 +104,8 @@ int main() {
     window.processInput();
 
     clearBuffers();
-    model1->draw(GL_TEXTURE0);
-    model2->draw(GL_TEXTURE0);
+    model1->draw(ourShader.get());
+    model2->draw(ourShader.get());
 
     window.swapBuffers();
     GLFWWrapper::pollEvents();
@@ -141,7 +141,7 @@ ShaderAndModels loadShaderAndModels() {
   // Load shaders.
   auto ourShader = std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
-  // Load texture.
+  // Load textures.
   auto texture1 = std::make_shared<GLTexture>("resources/textures/Bricks098_2K-JPG_Color.jpg", GL_RGB);
   auto texture2 = std::make_shared<GLTexture>("resources/learnopengl/textures/container.jpg", GL_RGB);
 
@@ -155,6 +155,10 @@ ShaderAndModels loadShaderAndModels() {
   // Load model
   auto model1 = std::make_shared<TexturedMesh>(texture2, models::cubeModel);
   auto model2 = std::make_shared<TexturedMesh>(texture1, models::planeModel);
+
+  // These numbers just have to be unique.
+  model1->bindTexture(0);
+  model2->bindTexture(1);
 
   return {ourShader, model1, model2};
 }

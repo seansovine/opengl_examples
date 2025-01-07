@@ -82,7 +82,7 @@ public:
 
     // Unbind this VAO.
     glBindVertexArray(0);
-    // Reset bound texture, though we aren't using them yet.
+    // Reset bound texture.
     glActiveTexture(GL_TEXTURE0);
   }
 
