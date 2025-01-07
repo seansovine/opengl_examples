@@ -34,7 +34,10 @@ static constexpr float sModelXYZUVVertices[] = {
   0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,   -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
 
   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f,   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f
+  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f,   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,
+//
+  -5.0, -3.0, -5.0, 0.0, 0.0,  5.0, -3.0, -5.0, 0.0, 0.0,  -5.0, -3.0, 5.0, 0.0, 0.0,
+   5.0, -3.0,  5.0, 0.0, 0.0,  5.0, -3.0, -5.0, 0.0, 0.0,  -5.0, -3.0, 5.0, 0.0, 0.0,
 };
 // clang-format on
 
@@ -46,7 +49,7 @@ static constexpr float sModelXYZUVVertices[] = {
 class TexturedMesh {
 public:
   /// Takes ownership of texture.
-  explicit TexturedMesh(std::shared_ptr<GLTexture>&& texture) {
+  explicit TexturedMesh(std::shared_ptr<GLTexture> &&texture) {
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
     glBindVertexArray(mVAO);
@@ -66,7 +69,7 @@ public:
     mTexture = texture;
   }
 
-  TexturedMesh(const TexturedMesh&) = delete;
+  TexturedMesh(const TexturedMesh &) = delete;
 
   ~TexturedMesh() {
     // de-allocate now
@@ -74,16 +77,23 @@ public:
     glDeleteBuffers(1, &mVBO);
   }
 
-  [[nodiscard]] unsigned int VAO() const {
-    return mVAO;
-  }
+  [[nodiscard]] unsigned int VAO() const { return mVAO; }
 
-  [[nosdiscard]] int vertexCount() const {
-    return mCount;
-  }
+  [[nosdiscard]] int vertexCount() const { return mCount; }
 
-  void bindTexture(GLenum textureUnit) const {
-    mTexture->bind(textureUnit);
+  void bindTexture(GLenum textureUnit) const { mTexture->bind(textureUnit); }
+
+  //
+
+  void draw(GLenum textureUnit) const {
+    // Bind texture to OpenGL texture unit.
+    bindTexture(textureUnit);
+
+    // Bind VAO.
+    glBindVertexArray(mVAO);
+
+    // Draw the model.
+    glDrawArrays(GL_TRIANGLES, 0, mCount);
   }
 
 private:
@@ -94,4 +104,4 @@ private:
   std::shared_ptr<GLTexture> mTexture;
 };
 
-#endif //TEXTURED_MODEL_H
+#endif // TEXTURED_MODEL_H

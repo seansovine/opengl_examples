@@ -26,18 +26,16 @@
 bool gl_configure();
 
 using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedMesh>>;
-
 ShaderAndModel loadShaderAndModel();
 
-void render(const TexturedMesh *model);
+void clearBuffers();
+
+void constantRotation(Transformations &transformations);
 
 // -------------
 // Program main.
 
 int main() {
-  // ---------
-  // Do setup.
-
   // Initialize GLFW window.
   GLFWWrapper window;
 
@@ -85,28 +83,23 @@ int main() {
   while (!window.shouldClose()) {
     window.processInput();
 
-    render(model.get());
+    clearBuffers();
+    model->draw(GL_TEXTURE0);
 
     window.swapBuffers();
     GLFWWrapper::pollEvents();
 
     constexpr bool ROTATING = false;
     if constexpr (ROTATING) {
-      // Rotates the model by a fixed amount on each call.
-      // Right now this is not tied to a clock, so the rotation
-      // speed will be different on each system. (We'll fix that.)
-      transformations.updateModelTransformation();
-      // Rotate by constant amount around x- and y-axes.
-      transformations.rotateViewTransformation(0.01, 0.0);
-      transformations.updateViewTransformation();
+      constantRotation(transformations);
     }
   }
 
   return 0;
 }
 
-// ------------
-// Helper defs.
+// -------------------
+// Helper definitions.
 
 bool gl_configure() {
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -136,30 +129,28 @@ ShaderAndModel loadShaderAndModel() {
     return {nullptr, nullptr}; // Early return.
   }
 
-  // Set texture as a uniform for shader.
   ourShader->use();
-  ourShader->setInt("texture1", 0);
-
   // Load model
   auto model = std::make_shared<TexturedMesh>(std::move(texture1));
 
   return {ourShader, model};
 }
 
+void constantRotation(Transformations &transformations) {
+  // Rotates the model by a fixed amount on each call.
+  // Right now this is not tied to a clock, so the rotation
+  // speed will be different on each system. (We'll fix that.)
+  transformations.updateModelTransformation();
+  // Rotate by constant amount around x- and y-axes.
+  transformations.rotateViewTransformation(0.01, 0.0);
+  transformations.updateViewTransformation();
+}
+
 // ----------------------------
 // Call OpenGL rendering funcs.
 
-void render(const TexturedMesh *model) {
+void clearBuffers() {
   // Clear buffers. Use black background.
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // Bind texture to OpenGL texture unit.
-  model->bindTexture(GL_TEXTURE0);
-
-  // Bind VAO.
-  glBindVertexArray(model->VAO());
-
-  // Draw the model.
-  glDrawArrays(GL_TRIANGLES, 0, model->vertexCount());
 }
