@@ -37,7 +37,7 @@ public:
   void generateMesh() {
     buildFloorMesh();
 
-    computeFloorVertices();
+    computeFloorMeshVertices();
     mFloorMesh = TexturedMesh(nullptr, mFloorMeshVertices);
 
     computeFunctionMeshVertices();
@@ -45,8 +45,10 @@ public:
   }
 
   void printMeshData() const {
-    // TODO: Printout some useful information on our mesh for debugging.
-    fmt::print("Number of triangles, etc...");
+    // Turn off console output buffering to see results immediately.
+    setbuf(stdout, nullptr);
+    // Print out some useful information on our mesh for debugging.
+    fmt::print("Number of triangles: {}", mFloorMeshSquares.size() * 2);
   }
 
   void draw(Shader *shader) const {
@@ -78,7 +80,7 @@ private:
     }
   }
 
-  void computeFloorVertices() {
+  void computeFloorMeshVertices() {
     auto vertices = std::vector<float>{};
     vertices.reserve(mFloorMeshSquares.size() * 10);
 
@@ -143,7 +145,6 @@ private:
     for (int i = 0; i < mFloorMeshVertices.size(); i += 5) {
       float x = mFloorMeshVertices[i + 0];
       float z = mFloorMeshVertices[i + 2];
-      // float y = mFloorMeshVertices[i + 1];
       float y = static_cast<float>(mF(x, z));
 
       vertices.insert(vertices.end(), {x, y, z, 0.0, 0.0});
