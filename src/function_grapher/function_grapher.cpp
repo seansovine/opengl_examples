@@ -3,28 +3,74 @@
 // Created by sean on 1/5/25.
 //
 
-// Manually order includes for now.
 // clang-format off
+#include "lib/function_grapher.h"
 
-// Note, this should be included first.
-#include "glad/glad.h"
-
-#include "lib/function_mesh.h"
+// We need this for the model viewer code we're using.
+//
+// TODO: It would be nice to isolate this dependency,
+// since we're not actually using it here.
+//
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include <fmt/core.h>
 // clang-format on
 
-int main() {
-  fmt::print("Hello, World from the future function grapher!\n");
+// --------------
+// Configuration.
 
-  // A simple function for testing mesh generation.
-  auto func = [](double x, double y) -> double { return x * x + y * y; };
+static constexpr Config CONFIG{
+    .wireframe = true,
+    .constantRotation = false,
+};
+
+// A simple function to graph for testing mesh generation.
+static auto func = [](double x, double y) -> double { return x * x + y * y; };
+
+// -------------
+// Program main.
+
+int main() {
+  fmt::print("Starting function grapher.\n");
 
   FunctionMesh mesh{func};
 
   // Print out some info on the generated mesh.
   mesh.printMeshData();
 
-  // TODO: Add basic OpenGL + GLFW setup.
-  // Add render loop code that calls mesh.draw(shader).
+  // TODO: Implement model generation in FunctionMesh constructor above.
+
+  // Initialize GLFW window.
+  GLFWWrapper window;
+
+  if (!window.init()) {
+    return -1;
+  }
+
+  // Load GL functions and set options.
+  bool configured = configureGL(CONFIG);
+
+  if (!configured) {
+    return -1;
+  }
+
+  // -----------------
+  // Main render loop.
+
+  while (!window.shouldClose()) {
+    window.processInput();
+
+    clearBuffers();
+
+    // TODO: Add code to draw models here.
+
+    window.swapBuffers();
+    GLFWWrapper::pollEvents();
+  }
+
+  // -----
+  // Done.
+
+  return 0;
 }

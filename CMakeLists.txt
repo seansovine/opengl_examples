@@ -117,6 +117,7 @@ add_definitions (-DGLFW_INCLUDE_NONE
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/utilities.cmake)
 
 # Basic glfw window examples.
+
 set(glfw_window_sources src/examples/glfw_window/glfw_window.cpp)
 glex_add_executable(glfw_window "${glfw_window_sources}")
 
@@ -124,6 +125,7 @@ set(hello_window_sources src/examples/glfw_window/hello_window.cpp)
 glex_add_executable(hello_window "${hello_window_sources}")
 
 # Our version of DeVries' "hello triangle".
+
 set(hello_triangle_sources
         src/examples/hello_triangle/hello_triangle.cpp
         src/examples/hello_triangle/shaders.h
@@ -132,6 +134,7 @@ set(hello_triangle_sources
 glex_add_executable(hello_triangle "${hello_triangle_sources}") # Quotes needed to pass whole list.
 
 # De Vries' coordinate systems example.
+
 set(coordinate_systems_sources
         src/examples/coordinate_systems/coordinate_systems_multiple_de_vries.cpp
         thirdparty/stb/stb_image.h
@@ -139,6 +142,7 @@ set(coordinate_systems_sources
 glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes needed to pass whole list.
 
 # Model viewer application.
+
 set(model_viewer_sources
         src/model_viewer/model_viewer_main.cpp
         src/model_viewer/lib/model_viewer.cpp
@@ -152,12 +156,14 @@ target_include_directories(model_viewer PUBLIC src/model_viewer)
 target_link_libraries(model_viewer fmt)
 
 # Assimp demo program.
+
 set(assimp_demo_sources
         src/model_viewer/assimp_load_demo.cpp)
 glex_add_executable(assimp_demo "${assimp_demo_sources}") # Quotes needed to pass whole list.
 target_link_libraries(assimp_demo assimp fmt)
 
 # Model viewer application - Assimp version.
+
 set(model_viewer_assimp_sources
         src/model_viewer/model_viewer_assimp.cpp
         src/model_viewer/lib/model_viewer.cpp
@@ -174,9 +180,18 @@ target_include_directories(model_viewer_assimp PUBLIC src/model_viewer)
 target_link_libraries(model_viewer_assimp assimp fmt)
 
 # Function grapher application.
+
 set(function_grapher_sources
         src/function_grapher/function_grapher.cpp
         src/tools/glfw_wrapper.h
-        src/function_grapher/lib/function_mesh.h)
+        src/model_viewer/lib/model_viewer.cpp)
 glex_add_executable(function_grapher "${function_grapher_sources}")
+
+set(function_grapher_include_dirs
+        src
+        src/function_grapher
+        src/model_viewer)
+target_include_directories(function_grapher PUBLIC ${function_grapher_include_dirs})
 target_link_libraries(function_grapher fmt)
+
+##

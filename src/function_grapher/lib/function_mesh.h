@@ -5,7 +5,6 @@
 #ifndef FUNCTION_MESH_H
 #define FUNCTION_MESH_H
 
-// Manually order includes for now.
 // clang-format off
 #include <fmt/core.h>
 
