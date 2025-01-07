@@ -12,34 +12,7 @@
 #include <tools/gl_texture.h>
 
 #include <memory>
-
-// For now, we'll hardcode De Vries' box model, but later
-// we'll add ability to load other models, maybe with Assimp.
-
-// clang-format off
-static constexpr float sModelXYZUVVertices[] = {
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,   0.5f,  -0.5f, -0.5f, 1.0f, 0.0f,   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,   0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,   0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  -0.5f, 0.5f,  0.5f,  0.0f, 1.0f,   -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,
-
-  -0.5f, 0.5f,  0.5f,  1.0f, 0.0f,  -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f,   -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-  -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,   -0.5f, 0.5f,  0.5f,  1.0f, 0.0f,
-
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,   0.5f,  -0.5f, -0.5f, 0.0f, 1.0f,
-  0.5f,  -0.5f, -0.5f, 0.0f, 1.0f,   0.5f,  -0.5f, 0.5f,  0.0f, 0.0f,   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-  -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,   0.5f,  -0.5f, -0.5f, 1.0f, 1.0f,   0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,
-  0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,   -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f,   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f,
-//
-  -5.0, -3.0, -5.0, 0.0, 0.0,  5.0, -3.0, -5.0, 0.0, 0.0,  -5.0, -3.0, 5.0, 0.0, 0.0,
-   5.0, -3.0,  5.0, 0.0, 0.0,  5.0, -3.0, -5.0, 0.0, 0.0,  -5.0, -3.0, 5.0, 0.0, 0.0,
-};
-// clang-format on
+#include <vector>
 
 // -------------
 // TexturedModel
@@ -49,14 +22,17 @@ static constexpr float sModelXYZUVVertices[] = {
 class TexturedMesh {
 public:
   /// Takes ownership of texture.
-  explicit TexturedMesh(std::shared_ptr<GLTexture> &&texture) {
+  explicit TexturedMesh(const std::shared_ptr<GLTexture> &texture, const std::vector<float> &model) {
+    const float* vertices = model.data();
+
     glGenVertexArrays(1, &mVAO);
     glGenBuffers(1, &mVBO);
     glBindVertexArray(mVAO);
 
     // Put vertex data in buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(sModelXYZUVVertices), sModelXYZUVVertices, GL_STATIC_DRAW);
+
+    glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(float), vertices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
@@ -65,7 +41,7 @@ public:
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    mCount = sizeof(sModelXYZUVVertices) / (5 * sizeof(float));
+    mCount = std::size(model) / 5;
     mTexture = texture;
   }
 
