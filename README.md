@@ -38,5 +38,5 @@ the main outline of the Model and Mesh classes,
 along with some of our own infrastructure we're slowly
 building up for working with OpenGL graphics as we work through the tutorial.
 
-Next, I plan to experiment with some lighting more sophisticated texture
+Next, I plan to experiment with some lighting and more sophisticated texture
 techniques.
