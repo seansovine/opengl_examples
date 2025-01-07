@@ -11,7 +11,7 @@
 // -----------------------------------------------------
 // Borrowed directly from www.learnopengl.com `model.h`.
 
-unsigned int textureFromFile(const char *path, const std::string &directory, bool gamma) {
+unsigned int textureFromFile(const char *path, const std::string &directory, bool) {
   std::string filename = std::string(path);
   filename = directory + "/textures/" + filename;
 

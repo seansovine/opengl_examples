@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
-// ------------------------------
-// Vertex and texture POD struct.
+// -------------------------------
+// Vertex and texture POD structs.
 
 struct Vertex {
   glm::vec3 mPosition;
@@ -42,14 +42,11 @@ public:
   }
 
   void draw(Shader &shader) const {
-    // Bind my VAO and draw it.
-    glBindVertexArray(mVAO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
-
+    // Assign my textures to uniforms, in case other
+    // models have assigned their own textures.
     {
-      // NOTE: We're only using diffuse right now, but
-      // later we will add the other types, so we leave
-      // the code hear to load those types.
+      // NOTE: We're only using diffuse right now, but later we will add
+      // the other types, so we leave the code here to handle them also.
       unsigned int diffuseNr = 1;
       unsigned int specularNr = 1;
       unsigned int normalNr = 1;
@@ -80,7 +77,12 @@ public:
       }
     }
 
-    // Unbind this VAO.
+    // Bind my VAO.
+    glBindVertexArray(mVAO);
+    // Draw my triangles.
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
+
+    // Unbind my VAO.
     glBindVertexArray(0);
     // Reset bound texture.
     glActiveTexture(GL_TEXTURE0);
@@ -94,8 +96,8 @@ private:
 
     glBindVertexArray(mVAO);
 
-    // NOTE: This is assuming that our struct and the glm
-    // types are laid out in memory sequentially with no padding.
+    // NOTE: Assumes that our struct and the glm types are
+    // laid out in memory sequentially with no padding.
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mVertices.size()) * sizeof(Vertex), &mVertices[0],
@@ -105,8 +107,8 @@ private:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(mIndices.size()) * sizeof(unsigned int),
                  &mIndices[0], GL_STATIC_DRAW);
 
-    // TODO: Here we bind vertex and diffuse texture coordinates.
-    // If we add other texture types, we need to create VAA's here.
+    // TODO: Here we bind vertex and diffuse texture coordinates. If we add other
+    // texture types, we need to add additional vertex attrib arrays for them here.
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), static_cast<void *>(nullptr));

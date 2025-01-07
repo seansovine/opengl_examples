@@ -25,6 +25,11 @@
 #include <map>
 // clang-format on
 
+// --------------
+// Configuration.
+
+constexpr bool EXTRA_DEBUG_OUTPUT = false;
+
 // --------------------------------------
 // Model class -- holds a model's meshes.
 //  Based heavily on Joey DeVries' model class.
@@ -119,8 +124,7 @@ private:
       auto numNormalTextures = material->GetTextureCount(aiTextureType_HEIGHT);
       auto numHeightTextures = material->GetTextureCount(aiTextureType_AMBIENT);
 
-      constexpr bool EXTRA_DEBUG_OUT = false;
-      if (EXTRA_DEBUG_OUT &&
+      if (EXTRA_DEBUG_OUTPUT &&
           numDiffuseTextures + numSpecularTextures + numNormalTextures + numHeightTextures > 0) {
         fmt::print("We found some textures!\n");
       }
