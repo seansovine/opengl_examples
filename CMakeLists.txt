@@ -145,6 +145,7 @@ set(model_viewer_sources
         thirdparty/stb/stb_image.h
         src/tools/glfw_wrapper.h)
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
+target_link_libraries(model_viewer fmt)
 
 # Assimp demo program.
 set(assimp_demo_sources

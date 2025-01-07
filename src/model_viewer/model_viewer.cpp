@@ -13,6 +13,7 @@
 #include "glad/glad.h"
 
 #include "lib/textured_mesh.h"
+#include "models/models.h"
 
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
@@ -21,17 +22,26 @@
 #include <tools/glfw_wrapper.h>
 #include <tools/transformations.h>
 
+#include <fmt/core.h>
+
 #include <memory>
 // clang-format on
 
 // -------------
 // Helper decls.
 
+struct ShaderAndModels {
+  std::shared_ptr<Shader> mShader;
+
+  std::shared_ptr<TexturedMesh> mModel1;
+  std::shared_ptr<TexturedMesh> mModel2;
+
+  [[nodiscard]] bool isOkay() const { return mShader && mModel1 && mModel2; }
+};
+
+ShaderAndModels loadShaderAndModels();
+
 bool gl_configure();
-
-using ShaderAndModel = std::pair<std::shared_ptr<Shader>, std::shared_ptr<TexturedMesh>>;
-ShaderAndModel loadShaderAndModel();
-
 void clearBuffers();
 
 void constantRotation(Transformations &transformations);
@@ -55,11 +65,17 @@ int main() {
   }
 
   // Load shader and model.
-  auto [ourShader, model] = loadShaderAndModel();
+  auto shaderAndModels = loadShaderAndModels();
 
-  if (!ourShader || !model) {
+  if (!shaderAndModels.isOkay()) {
+    fmt::print("Failed to load shaders and models.\n");
+
     return -1;
   }
+
+  auto ourShader = shaderAndModels.mShader;
+  auto model1 = shaderAndModels.mModel1;
+  auto model2 = shaderAndModels.mModel2;
 
   // Set uo transformations.
   Transformations transformations{ourShader, window.aspectRatio()};
@@ -88,7 +104,8 @@ int main() {
     window.processInput();
 
     clearBuffers();
-    model->draw(GL_TEXTURE0);
+    model1->draw(GL_TEXTURE0);
+    model2->draw(GL_TEXTURE0);
 
     window.swapBuffers();
     GLFWWrapper::pollEvents();
@@ -117,7 +134,7 @@ bool gl_configure() {
   return true;
 }
 
-ShaderAndModel loadShaderAndModel() {
+ShaderAndModels loadShaderAndModels() {
   std::string vertexShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer.vs");
   std::string fragmentShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer.fs");
 
@@ -126,8 +143,9 @@ ShaderAndModel loadShaderAndModel() {
 
   // Load texture.
   auto texture1 = std::make_shared<GLTexture>("resources/textures/Bricks098_2K-JPG_Color.jpg", GL_RGB);
+  auto texture2 = std::make_shared<GLTexture>("resources/learnopengl/textures/container.jpg", GL_RGB);
 
-  if (!texture1->isLoaded()) {
+  if (!texture1->isLoaded() || !texture2->isLoaded()) {
     std::cout << "Failed to load texture" << std::endl;
 
     return {nullptr, nullptr}; // Early return.
@@ -135,9 +153,10 @@ ShaderAndModel loadShaderAndModel() {
 
   ourShader->use();
   // Load model
-  auto model = std::make_shared<TexturedMesh>(std::move(texture1));
+  auto model1 = std::make_shared<TexturedMesh>(texture2, models::cubeModel);
+  auto model2 = std::make_shared<TexturedMesh>(texture1, models::planeModel);
 
-  return {ourShader, model};
+  return {ourShader, model1, model2};
 }
 
 void constantRotation(Transformations &transformations) {
