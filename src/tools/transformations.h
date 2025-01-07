@@ -89,7 +89,7 @@ private:
     mViewMatrix = glm::translate(mViewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
 
     float angle = 20.0f;
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 position = glm::vec3(-0.1f, -0.1f, -0.1f);
 
     // Converts model local coordinates to world coordinates.
     makeModelMatrix(mModelMatrix, position, angle);

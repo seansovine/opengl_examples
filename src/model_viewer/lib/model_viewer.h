@@ -6,7 +6,7 @@
 #define MODEL_VIEWER_H
 
 // clang-format off
-#include "lib/textured_mesh.h"
+#include "tools/textured_mesh.h"
 
 #include <learnopengl/shader_m.h>
 #include <tools/glfw_wrapper.h>

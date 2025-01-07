@@ -17,6 +17,11 @@
 #include <fmt/core.h>
 // clang-format on
 
+// --------------------
+// Helper declarations.
+
+std::shared_ptr<Shader> loadShader();
+
 // --------------
 // Configuration.
 
@@ -26,20 +31,13 @@ static constexpr Config CONFIG{
 };
 
 // A simple function to graph for testing mesh generation.
-static auto func = [](double x, double y) -> double { return x * x + y * y; };
+static auto func = [](double x, double y) -> double { return 0.5 * (x * x + y * y); };
 
 // -------------
 // Program main.
 
 int main() {
   fmt::print("Starting function grapher.\n");
-
-  FunctionMesh mesh{func};
-
-  // Print out some info on the generated mesh.
-  mesh.printMeshData();
-
-  // TODO: Implement model generation in FunctionMesh constructor above.
 
   // Initialize GLFW window.
   GLFWWrapper window;
@@ -55,6 +53,29 @@ int main() {
     return -1;
   }
 
+  // Load shader.
+  auto ourShader = loadShader();
+
+  if (!ourShader) {
+    return -1;
+  }
+  ourShader->use();
+
+  // Generate mesh for function graph.
+  FunctionMesh mesh{func};
+  // Print out some info on the generated mesh.
+  mesh.printMeshData();
+
+  // Load shader and model.
+  auto floorModel = std::make_shared<TexturedMesh>(nullptr, mesh.floorVertices());
+  auto functionModel = std::make_shared<TexturedMesh>(nullptr, mesh.functionVertices());
+
+  // Set uo transformations.
+  Transformations transformations{ourShader, window.aspectRatio()};
+
+  // Set our resize callback that updates the projection.
+  setCallbacks(window, transformations);
+
   // -----------------
   // Main render loop.
 
@@ -63,7 +84,13 @@ int main() {
 
     clearBuffers();
 
-    // TODO: Add code to draw models here.
+    // TODO: We should use the FunctionMesh draw method here.
+
+    ourShader->setVec4("rgbaColor", glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+    floorModel->draw(ourShader.get());
+
+    ourShader->setVec4("rgbaColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    functionModel->draw(ourShader.get());
 
     window.swapBuffers();
     GLFWWrapper::pollEvents();
@@ -73,4 +100,15 @@ int main() {
   // Done.
 
   return 0;
+}
+
+// -------------------
+// Helper definitions.
+
+std::shared_ptr<Shader> loadShader() {
+  std::string vertexShaderPath = FileSystem::getPath("src/function_grapher/shaders/function_grapher.vs");
+  std::string fragmentShaderPath = FileSystem::getPath("src/function_grapher/shaders/function_grapher.fs");
+
+  // Load shaders.
+  return std::make_shared<Shader>(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 }
