@@ -24,6 +24,8 @@
 
 class TexturedMesh {
 public:
+  TexturedMesh() = default;
+
   /// Takes ownership of texture.
   explicit TexturedMesh(const std::shared_ptr<GLTexture> &texture, const std::vector<float> &model) {
     const float *vertices = model.data();
@@ -61,6 +63,10 @@ public:
   [[nodiscard]] int vertexCount() const { return mCount; }
 
   void bindTexture(int textureNum) {
+    if (!mTexture) {
+      throw std::runtime_error("TexturedMesh instance is uninitialized: Cannot bind texture.");
+    }
+
     mTextureNum = textureNum;
     mTexture->bind(GL_TEXTURE0 + textureNum);
   }
@@ -68,8 +74,10 @@ public:
   // Draw my triangles.
 
   void draw(Shader *shader) const {
-    // Pass our texture number as uniform on shader.
-    shader->setInt("texture1", mTextureNum);
+    if (mTexture) {
+      // Pass our texture number as uniform on shader.
+      shader->setInt("texture1", mTextureNum);
+    }
 
     // Bind VAO.
     glBindVertexArray(mVAO);

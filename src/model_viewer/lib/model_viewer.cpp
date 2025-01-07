@@ -7,7 +7,7 @@
 #include "glad/glad.h"
 
 #include "lib/model_viewer.h"
-#include "lib/textured_mesh.h"
+#include "tools/textured_mesh.h"
 
 #include "models/models.h"
 
