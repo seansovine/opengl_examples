@@ -11,12 +11,12 @@
 // Note, this must be included first.
 #include "glad/glad.h"
 #include "lib/textured_mesh.h"
-#include "lib/transformations.h"
 
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <tools/gl_texture.h>
 #include <tools/glfw_wrapper.h>
+#include <tools/transformations.h>
 
 #include <memory>
 

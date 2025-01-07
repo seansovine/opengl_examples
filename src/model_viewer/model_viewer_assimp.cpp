@@ -12,15 +12,15 @@
 // Note, this must be included first.
 #include "glad/glad.h"
 
-#include "tools/model_data.h"
-#include "tools/transformations.h"
-
 #include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
+
 #include <tools/glfw_wrapper.h>
+#include <tools/model_data.h>
+#include <tools/transformations.h>
 
 #include <memory>
-// clang-format off
+// clang-format on
 
 // -------
 // Config.
