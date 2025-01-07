@@ -2,7 +2,7 @@
 //
 // Created by sean on 12/4/24.
 //
-// Much help and inspiration drawn from www.learnopengl.com examples.
+// Much help and inspiration drawn from www.learnopengl.com.
 //
 
 // clang-format off

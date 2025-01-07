@@ -1,11 +1,8 @@
-// Model viewer program: Work in progress.
-//
-// In this version we're working on incorporating
-// models loaded using Assimp, based on De Vries'
-// tutorial on model loading and its code, from
-// www.learnopengl.com.
+// Model viewer program w/ Assimp model loading.
 //
 // Created by sean on 12/22/24.
+//
+// Much help and inspiration drawn from www.learnopengl.com.
 //
 
 // clang-format off
@@ -29,8 +26,8 @@ static constexpr Config CONFIG{
 
 static const auto modelPath = std::string(project_root) + "/resources/learnopengl/backpack.obj";
 
-// -------------
-// Helper decls.
+// ---------------------
+// Helpers declarations.
 
 std::shared_ptr<Shader> loadShader();
 
@@ -38,9 +35,6 @@ std::shared_ptr<Shader> loadShader();
 // Program main.
 
 int main() {
-  // ---------
-  // Do setup.
-
   // Initialize GLFW window.
   GLFWWrapper window;
 
@@ -63,8 +57,6 @@ int main() {
   }
   ourShader->use();
 
-  // TODO: Update texture handling for Assimp-loaded models.
-
   // Load model with Assimp.
   Model model{modelPath};
 
@@ -80,12 +72,10 @@ int main() {
   while (!window.shouldClose()) {
     window.processInput();
 
-    ourShader->use();
     clearBuffers();
-
     model.draw(*ourShader);
-    window.swapBuffers();
 
+    window.swapBuffers();
     GLFWWrapper::pollEvents();
 
     if constexpr (CONFIG.constantRotation) {
@@ -96,8 +86,8 @@ int main() {
   return 0;
 }
 
-// ------------
-// Helper defs.
+// -------------------
+// Helper definitions.
 
 std::shared_ptr<Shader> loadShader() {
   std::string vertexShaderPath = FileSystem::getPath("src/model_viewer/shaders/model_viewer_assimp.vs");
