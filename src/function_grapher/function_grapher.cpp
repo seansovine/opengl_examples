@@ -61,19 +61,15 @@ int main() {
   }
   ourShader->use();
 
-  // Generate mesh for function graph.
+  // Generate meshes for function graph.
   FunctionMesh mesh{func};
   // Print out some info on the generated mesh.
   mesh.printMeshData();
 
-  // Load shader and model.
-  auto floorModel = std::make_shared<TexturedMesh>(nullptr, mesh.floorVertices());
-  auto functionModel = std::make_shared<TexturedMesh>(nullptr, mesh.functionVertices());
-
   // Set uo transformations.
   Transformations transformations{ourShader, window.aspectRatio()};
 
-  // Set our resize callback that updates the projection.
+  // Set our standard resize and mouse event callbacks.
   setCallbacks(window, transformations);
 
   // -----------------
@@ -83,14 +79,7 @@ int main() {
     window.processInput();
 
     clearBuffers();
-
-    // TODO: We should use the FunctionMesh draw method here.
-
-    ourShader->setVec4("rgbaColor", glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
-    floorModel->draw(ourShader.get());
-
-    ourShader->setVec4("rgbaColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    functionModel->draw(ourShader.get());
+    mesh.draw(ourShader.get());
 
     window.swapBuffers();
     GLFWWrapper::pollEvents();

@@ -36,7 +36,6 @@ public:
 
     // Put vertex data in buffer
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-
     glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(float), vertices, GL_STATIC_DRAW);
 
     // position attribute

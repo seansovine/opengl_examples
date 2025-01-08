@@ -146,9 +146,9 @@ glex_add_executable(coordinate_systems "${coordinate_systems_sources}") # Quotes
 set(model_viewer_sources
         src/model_viewer/model_viewer_main.cpp
         src/model_viewer/lib/model_viewer.cpp
-        src/model_viewer/lib/textured_mesh.h
-        thirdparty/stb/stb_image.h
         src/tools/glfw_wrapper.h
+        src/tools/textured_mesh.h
+        thirdparty/stb/stb_image.h
 )
 glex_add_executable(model_viewer "${model_viewer_sources}") # Quotes needed to pass whole list.
 
@@ -167,12 +167,12 @@ target_link_libraries(assimp_demo assimp fmt)
 set(model_viewer_assimp_sources
         src/model_viewer/model_viewer_assimp.cpp
         src/model_viewer/lib/model_viewer.cpp
-        src/model_viewer/lib/textured_mesh.h
         src/tools/model_data.h
         src/tools/model_data.cpp
         src/tools/mesh_data.h
-        thirdparty/stb/stb_image.h
+        src/tools/textured_mesh.h
         src/tools/glfw_wrapper.h
+        thirdparty/stb/stb_image.h
 )
 glex_add_executable(model_viewer_assimp "${model_viewer_assimp_sources}") # Quotes needed to pass whole list.
 
@@ -184,13 +184,16 @@ target_link_libraries(model_viewer_assimp assimp fmt)
 set(function_grapher_sources
         src/function_grapher/function_grapher.cpp
         src/tools/glfw_wrapper.h
-        src/model_viewer/lib/model_viewer.cpp)
+        src/model_viewer/lib/model_viewer.cpp
+        src/function_grapher/lib/function_mesh.h
+)
 glex_add_executable(function_grapher "${function_grapher_sources}")
 
 set(function_grapher_include_dirs
         src
         src/function_grapher
-        src/model_viewer)
+        src/model_viewer
+)
 target_include_directories(function_grapher PUBLIC ${function_grapher_include_dirs})
 target_link_libraries(function_grapher fmt)
 
