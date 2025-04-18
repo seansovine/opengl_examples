@@ -32,16 +32,15 @@ class FunctionMesh {
   using F = double (*)(double, double);
 
 public:
-  explicit FunctionMesh(const F func) : mF(func) { generateMesh(); }
+  explicit FunctionMesh(const F func) : mFunc(func) { generateMesh(); }
 
   void generateMesh() {
     buildFloorMesh();
-
     computeFloorMeshVertices();
-    mFloorMesh = TexturedMesh(nullptr, mFloorMeshVertices);
-
     computeFunctionMeshVertices();
-    mFunctionMesh = TexturedMesh(nullptr, mFunctionMeshVertices);
+
+    mFloorMesh = std::make_shared<TexturedMesh>(nullptr, mFloorMeshVertices);
+    mFunctionMesh = std::make_shared<TexturedMesh>(nullptr, mFunctionMeshVertices);
   }
 
   void printMeshData() const {
@@ -52,29 +51,38 @@ public:
   }
 
   void draw(Shader *shader) const {
-    mFloorMesh.draw(shader);
-    mFunctionMesh.draw(shader);
+    // NOTE: This makes assumptions about the shader it's used with.
+    shader->setVec4("rgbaColor", glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+    mFloorMesh->draw(shader);
+    shader->setVec4("rgbaColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    mFunctionMesh->draw(shader);
   }
 
   std::vector<float> &floorVertices() { return mFloorMeshVertices; }
   std::vector<float> &functionVertices() { return mFunctionMeshVertices; }
 
+  TexturedMesh &floorMesh() { return *mFloorMesh; }
+  TexturedMesh &functionMesh() { return *mFunctionMesh; }
+
 private:
   void buildFloorMesh() {
     mFloorMeshSquares.reserve(mNumCells * mNumCells);
-
     const double width = 1.0 / mNumCells;
 
     for (int i = 1; i <= mNumCells; i++) {
       for (int j = 1; j <= mNumCells; j++) {
-        Square square;
-
-        square.mTopLeft[0] = (i - 1) * width;
-        square.mTopLeft[1] = (j - 1) * width;
-
-        square.mBtmRight[0] = i * width;
-        square.mBtmRight[1] = j * width;
-
+        // clang-format off
+        Square square{
+          .mTopLeft ={
+            static_cast<float>((i - 1) * width),
+            static_cast<float>((j - 1) * width),
+          },
+          .mBtmRight = {
+            static_cast<float>(i * width),
+            static_cast<float>(j * width),
+          }
+        };
+        // clang-format on
         mFloorMeshSquares.push_back(square);
       }
     }
@@ -86,6 +94,7 @@ private:
 
     for (const auto &square : mFloorMeshSquares) {
       // clang-format off
+
       // First triangle.
       vertices.insert(vertices.end(), {
         square.mTopLeft[0],
@@ -134,7 +143,7 @@ private:
       // clang-format on
     }
 
-    mFloorMeshVertices = vertices;
+    mFloorMeshVertices = std::move(vertices);
   }
 
   void computeFunctionMeshVertices() {
@@ -142,33 +151,36 @@ private:
     vertices.reserve(mFloorMeshVertices.size());
 
     // Now update y-coordinates w/ function values.
-    for (int i = 0; i < mFloorMeshVertices.size(); i += 5) {
+    for (std::size_t i = 0; i < mFloorMeshVertices.size(); i += 5) {
       float x = mFloorMeshVertices[i + 0];
       float z = mFloorMeshVertices[i + 2];
-      float y = static_cast<float>(mF(x, z));
+
+      auto y = static_cast<float>(mFunc(x, z));
 
       vertices.insert(vertices.end(), {x, y, z, 0.0, 0.0});
     }
 
-    mFunctionMeshVertices = vertices;
+    mFunctionMeshVertices = std::move(vertices);
   }
 
 private:
-  // Function z = mF(x, y) that we will graph.
-  F mF;
+  // The function z = mF(x, y) that we will graph.
+  F mFunc;
 
-  // Width of cells to divide x,y plane region into.
+  // Number of subdivisions of x,y axes when creating cells.
   static constexpr int mNumCells = 100;
+
   // Squares that make up x,y-plane mesh.
   std::vector<Square> mFloorMeshSquares = {};
-  // Vertices of triangular tessellation from above squares.
+  // Vertices of triangular tessellation built from squares.
   std::vector<float> mFloorMeshVertices = {};
-  // Vertices of triangular tessellation from above squares.
+  // Tessellation vertices with heights from function values.
   std::vector<float> mFunctionMeshVertices = {};
+
   // Default is uninitialized.
-  TexturedMesh mFloorMesh{};
+  std::shared_ptr<TexturedMesh> mFloorMesh{};
   // Default is uninitialized.
-  TexturedMesh mFunctionMesh{};
+  std::shared_ptr<TexturedMesh> mFunctionMesh{};
 };
 
 #endif // FUNCTION_MESH_H

@@ -22,8 +22,8 @@ The main entrypoint is [here](src/function_grapher/function_grapher.cpp), and
 the mesh generation is done in [`function_mesh.h`](src/function_grapher/lib/function_mesh.h).
 
 There are definitely many interesting features that could be added to this,
-to improve its usefulness. But it's already been an interesting and useful project
-for learning about OpenGL and graphics in general.
+to improve its usefulness. But it's been a good project for learning about
+graphics and hopefully I'll get around to adding more later.
 
 ## Model viewer
 
